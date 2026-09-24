@@ -11,14 +11,42 @@
     --lightBlue:#cfe8ff; --darkBlue:#1c6dd0;
     --consang:#e03131;
   }
-  html,body{margin:0;padding:0;background:#faf9f7;font-family:system-ui,sans-serif;}
+  html,body{margin:0;padding:0;background:#faf9f7;font-family:system-ui,sans-serif;height:100%;overflow:hidden;}
   #toolbar{
-    position:fixed;top:0;left:0;right:0;padding:8px 14px;background:#fff;
-    border-bottom:1px solid #ddd;z-index:10;display:flex;gap:16px;align-items:center;
-    font-size:14px;
+    background:#fff;border-bottom:1px solid #ddd;
+    display:flex;flex-direction:column;gap:6px;padding:8px 14px;
+    font-size:13px;
   }
-  #toolbar label{display:flex;gap:4px;align-items:center;cursor:pointer;}
-  #wrap{position:relative;padding-top:50px;}
+  #toolbar .row{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  #toolbar label{display:flex;gap:4px;align-items:center;cursor:pointer;white-space:nowrap;}
+  #toolbar button{ cursor:pointer; border:1px solid #ccc; background:#f5f5f5; border-radius:5px; padding:3px 8px; font-size:12px; }
+  #toolbar button:hover{ background:#eee; }
+  #birdSearch{ padding:3px 6px; font-size:12px; width:220px; }
+  #selectedChips{ display:flex; gap:6px; flex-wrap:wrap; }
+  .chip{
+    display:flex; align-items:center; gap:5px; background:#eef1f5; border:1px solid #ccd;
+    border-radius:14px; padding:2px 4px 2px 10px; font-size:12px;
+  }
+  .chip button{ border:none; background:none; cursor:pointer; font-size:13px; line-height:1; padding:2px 6px; border-radius:50%; }
+  .chip button:hover{ background:#ddd; }
+  #stats{ color:#666; margin-left:auto; }
+
+  #viewport{
+    position:relative; overflow:hidden; height:calc(100vh - 84px);
+    background:
+      linear-gradient(#eee 1px, transparent 1px) 0 0 / 40px 40px,
+      linear-gradient(90deg, #eee 1px, transparent 1px) 0 0 / 40px 40px,
+      #faf9f7;
+    cursor:grab;
+  }
+  #viewport.panning{ cursor:grabbing; }
+  #canvas{ position:absolute; top:0; left:0; transform-origin:0 0; }
+
+  #emptyState{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#888; font-size:15px; text-align:center; pointer-events:none;
+  }
+
   .node-card{
     position:absolute; box-sizing:border-box; border-radius:8px; border:2px solid #999;
     background:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;
@@ -26,24 +54,47 @@
   }
   .node-card.female{ background:var(--lightPink); border-color:var(--darkPink); }
   .node-card.male{ background:var(--lightBlue); border-color:var(--darkBlue); }
-  .node-card.dim{ opacity:.25; }
-  .node-card.focus{ box-shadow:0 0 0 3px #222; z-index:2; }
+  .node-card.selected{ box-shadow:0 0 0 3px #222; z-index:2; }
   .pairing-dot{ position:absolute; width:10px; height:10px; border-radius:50%; background:#aaa; }
   .pairing-dot.consang{ background:var(--consang); width:14px; height:14px; margin:-2px; }
-  svg.edges{ position:absolute; top:0; left:0; pointer-events:none; }
+  svg.edges{ position:absolute; top:0; left:0; pointer-events:none; overflow:visible; }
   .edge-line{ fill:none; stroke:#ccc; stroke-width:1.5; }
   .edge-line.consang{ stroke:var(--consang); stroke-width:2.5; }
-  .edge-line.dim{ opacity:.15; }
-  #stats{ color:#555; }
+
+  #zoomControls{ position:absolute; bottom:16px; right:16px; display:flex; flex-direction:column; gap:4px; }
+  #zoomControls button{
+    width:30px; height:30px; border-radius:6px; border:1px solid #ccc; background:#fff;
+    font-size:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.15);
+  }
 </style>
 </head>
 <body>
 <div id="toolbar">
-  <strong>Tree of Birds</strong> — Dagre layout prototype (no marriage semantics, free/open-source layout)
-  <label><input type="checkbox" id="toggleConsang" checked> Highlight consanguineous pairings</label>
-  <span id="stats"></span>
+  <div class="row">
+    <strong>Tree of Birds</strong> — Dagre layout prototype
+    <label><input type="checkbox" id="toggleConsang" checked> Highlight consanguineous pairings</label>
+    <span id="stats"></span>
+  </div>
+  <div class="row">
+    <input id="birdSearch" list="birdOptions" placeholder="Search a bird by name…" autocomplete="off">
+    <datalist id="birdOptions"></datalist>
+    <button id="addBirdBtn">Add to tree</button>
+    <label><input type="checkbox" id="showParents" checked> Parents</label>
+    <label><input type="checkbox" id="showSiblings" checked> Siblings</label>
+    <label><input type="checkbox" id="showOffspring" checked> Offspring</label>
+    <label><input type="checkbox" id="showAll"> Show entire collection</label>
+    <div id="selectedChips"></div>
+  </div>
 </div>
-<div id="wrap"><div id="canvas" style="position:relative;"></div></div>
+<div id="viewport">
+  <div id="canvas"></div>
+  <div id="emptyState">Search for a bird above, or check "Show entire collection".</div>
+  <div id="zoomControls">
+    <button id="zoomInBtn" title="Zoom in">+</button>
+    <button id="zoomOutBtn" title="Zoom out">−</button>
+    <button id="fitBtn" title="Fit to screen">⤢</button>
+  </div>
+</div>
 <script src="dagre-prototype.js"></script>
 </body>
 </html>
