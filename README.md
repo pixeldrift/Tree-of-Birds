@@ -13,23 +13,24 @@ browsers block the sample data fetch otherwise. Easiest options:
 - **Locally**: from the repo root, run a static server (e.g. `python3 -m http.server`)
   and open `index.html` through it.
 
-It loads the sample pedigree in [`data/`](data) automatically — search for a bird by name,
-or check **Show entire collection** to see everything at once. Loading your own data from
-a file isn't wired up yet (the old vis-network version had a file picker; it hasn't been
-ported to this version — see below).
+It loads the sample pedigree in [`data/`](data) automatically, or use **Choose File** in
+the header to load your own CSV/TSV.
 
-- **Pan**: click and drag the background
-- **Zoom**: scroll wheel, or the `+` / `−` / fit buttons in the bottom-right
-- **Select**: click a bird, or search by name and hit **Add to tree**
-- **Parents / Siblings / Offspring** checkboxes control how much of the tree is shown
-  around your current selection
-- Pairings flagged in red are consanguineous (the two birds share a common ancestor) —
-  toggle this off with **Highlight consanguineous pairings**
+- **Select**: click a bird in the graph, or in the Bird List at the bottom
+- **Pan**: click and drag the graph background
+- **Zoom**: scroll wheel, or the `+` / `−` / fit buttons in the bottom-left of the graph
+- **Parents / Siblings / Offspring / Consanguinity** checkboxes (bottom-right of the graph)
+  control how much of the tree is shown around your current selection, and whether
+  consanguineous pairings (the two birds share a common ancestor) are highlighted in red
+- The **Bird Info** sidebar on the right lists a card per selected bird, with its
+  mother/father/offspring as clickable links that add them to the selection too — this is
+  also where bird-level actions (like a future COI calculation between two selected birds)
+  will live
 
 ## Data format
 
-This is the format the app expects (see `data/Geneology Sample Data - Sheet1.tsv` for a
-full example) — the columns to match once file upload is wired back in:
+Load a `.csv` or `.tsv` file with these columns (see
+`data/Geneology Sample Data - Sheet1.tsv` for a full example):
 
 | Column     | Required | Notes                                   |
 |------------|----------|------------------------------------------|
@@ -43,7 +44,7 @@ full example) — the columns to match once file upload is wired back in:
 ## Project structure
 
 ```
-index.html, app.js, style.css   the app
+index.html, main.js, style.css, birdImages.js   the app
 data/                            sample pedigree + reference species data
 images/                          logo and bird thumbnail art
 archive/                         earlier prototypes and abandoned framework attempts,
