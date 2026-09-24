@@ -354,6 +354,19 @@ function updateIntro() {
 const pairKey = (m, f) => `${m || ''}:${f || ''}`;
 const normalizedKey = bird => pairKey(bird.motherID, bird.fatherID);
 
+// Smooth cubic-bezier path through Dagre's edge points, curving vertically between each
+// pair (control points pulled to the midpoint height) instead of straight line segments.
+function smoothEdgePath(points) {
+  if (!points.length) return '';
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length; i++) {
+    const p0 = points[i - 1], p1 = points[i];
+    const midY = (p0.y + p1.y) / 2;
+    d += ` C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
+  }
+  return d;
+}
+
 // Map of ancestorId -> minimal number of generations above `id` (breadth-first, so the
 // first depth recorded for an ancestor is always the shortest path to them).
 function ancestorDepths(id, byId, maxDepth = 10) {
@@ -479,7 +492,7 @@ function renderGraph(g, selectedSet, showConsang) {
 
   g.edges().forEach(e => {
     const edge = g.edge(e);
-    const d = edge.points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+    const d = smoothEdgePath(edge.points);
     const targetNode = g.node(e.w);
     const consang = showConsang && targetNode && targetNode.pairing && targetNode.consang;
     const path = document.createElementNS(svgNS, "path");
