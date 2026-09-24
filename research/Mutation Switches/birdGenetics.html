@@ -1,0 +1,193 @@
+
+<html>
+	<head>
+
+		<script
+  src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+  integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+  crossorigin="anonymous"></script>
+
+		<script>
+			$(document).ready(function() {
+				var switches=[];
+				var mutationName = "Normal";
+
+				$(".switch").click(function() {
+					$(this).toggleClass("on");
+
+					switches = [];
+					var digit;
+					
+					$(".switch").each(function (index) {
+						if ($(this).hasClass("on")) {
+							digit = 1;
+						} else {
+							digit = 0;
+						}
+						switches.push(digit);
+					});
+
+					switchString = switches.join("");
+					console.log(switchString+"\n");
+
+					switch (switchString) {
+						case "0000":
+							mutationName = "Normal";
+							break;
+						case "0001":
+							mutationName = "Turquoise";
+							break;
+						case "0010":
+							mutationName = "Cinnamon";
+							break;
+						case "0011":
+							mutationName = "Turquoise Cinnamon";
+							break;
+						case "0100":
+							mutationName = "Yellow-Sided";
+							break;
+						case "0101":
+							mutationName = "Turquoise Yellow-Sided";
+							break;
+						case "0110":
+							mutationName = "Pineapple";
+							break;
+						case "0111":
+							mutationName = "Turquoise Cinnamon Yellow-Sided";
+							break;
+						case "1000":
+							mutationName = "Dilute";
+							break;
+						case "1001":
+							mutationName = "Mint";
+							break;
+						case "1010":
+							mutationName = "Dilute Cinnamon";
+							break;
+						case "1011":
+							mutationName = "Cinnamint";
+							break;
+						case "1100":
+							mutationName = "Dillute Yellow-Sided";
+							break;
+						case "1101":
+							mutationName = "Opamint";
+							break;
+						case "1110":
+							mutationName = "Suncheek";
+							break;
+						case "1111":
+							mutationName = "Mooncheek";
+							break;
+					}
+
+					$("#resultBox").html(mutationName);
+
+				});
+
+			});
+		</script>
+
+		<style>
+			#intro {
+				font-family: Futura, sans-serif;
+			}
+			.switch {
+				width: 180px;
+				height: 300px;
+				padding: 0;
+				margin: 0;
+				display: inline-block;
+				background: url("img/switch_off.jpg");
+			}
+
+			.on {
+				background: url("img/switch_on.jpg");
+			}
+			.label {
+				position: relative;
+				width: 160px;
+				height: 30px;
+				top : 250px;
+				left: 10px;
+				font-family: sans-serif;
+				font-weight: bold;
+				font-size: 24px;
+				text-align: center;
+				text-transform: uppercase;
+				color: gray;
+			}
+			.on .label {
+				color: green;
+			}
+			#resultBox {
+				display: block;
+				margin-top: 20px;
+				padding-top: 10px;
+				width: 730px;
+				height: 50px;
+				text-transform: uppercase;
+				box-shadow: inset 0 0 8px rgba(0,0,0, .2);
+				font-family: Futura, sans-serif;
+				font-weight: bold;
+				font-size: 36px;
+				text-align: center;
+			}
+			table#legend {
+				font-family: Futura, sans-serif;
+				padding: 20px;
+			}
+			table#legend tr td:first-child {
+				font-weight: bold;
+				padding-right: 20px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div id="intro">4 different gene mutations control various color properties of greencheek conures. Experiment below to enable or disable the genes to see what colors you can make! With 4 properties, there are 24 combinations possible!</div>
+
+		<table id="legend">
+			<tr>
+				<td>Dilute</td>
+				<td>Recessive mutation that reduces melanin. Straight Dilutes will always show some pigment in the feet.</td>
+			</tr>
+			<tr>
+				<td>Opaline</td>
+				<td>Sex-linked mutation that causes increased spread of yellow and red pigmentation.</td>
+			</tr>
+			<tr>
+				<td>Cinnamon</td>
+				<td>Sex-linked mutation stops the oxidation of melanin so it is a lighter brown color instead of black.</td>
+			</tr>
+			<tr>
+				<td>Turquoise</td>
+				<td>Recessive mutation that causes reduced psittacin pigments, meaning less yellow and red.</td>
+			</tr>
+		</table>
+
+		<div id="switch1" class="switch"><div class="label">Dilute</div></div>
+		<div id="switch2" class="switch"><div class="label">Opaline</div></div>
+		<div id="switch3" class="switch"><div class="label">Cinnamon</div></div>
+		<div id="switch4" class="switch"><div class="label">Turquoise</div></div>
+
+		<div id="resultBox">Normal</div>
+
+
+
+
+	</body>
+
+
+
+
+
+
+
+
+
+
+
+</html>
