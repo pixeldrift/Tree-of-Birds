@@ -578,3 +578,126 @@ svg.edges { position: absolute; top: 0; left: 0; pointer-events: none; overflow:
   font-size: 16px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.2);
 }
 
+/* -------------------- Sidebar tools (Coefficient of Inbreeding, etc.) -------------------- */
+
+#sidebar-tools {
+  flex-shrink: 0;
+  padding: 8px;
+  border-top: 1px solid var(--systemGray);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tool-btn {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--systemNavy);
+  background: var(--systemNavy);
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+}
+.tool-btn:hover { background: #1e3a52; }
+
+.tool-panel {
+  flex-shrink: 0;
+  max-height: 60%;
+  overflow-y: auto;
+  border-top: 1px solid var(--systemGray);
+  background: white;
+  padding: 10px;
+}
+
+.tool-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.tool-panel-header-actions { display: flex; gap: 4px; align-items: center; }
+.tool-panel-header .info-btn,
+.tool-panel-header .close-btn {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 16px;
+  color: var(--systemNavy);
+  padding: 0 4px;
+}
+.tool-panel-header .close-btn { font-weight: bold; }
+
+.coi-hint { color: #666; font-style: italic; font-size: 13px; }
+
+.coi-samesex {
+  background: var(--lightPink);
+  border: 1px solid var(--darkPink);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 13px;
+}
+
+.coi-pair {
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: 8px;
+  color: var(--systemNavy);
+}
+.coi-pair span { color: var(--systemGray); font-weight: normal; margin: 0 4px; }
+
+.coi-stat {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding: 3px 0;
+  border-bottom: 1px dotted var(--systemGray);
+}
+
+.coi-meter {
+  margin: 12px 0 8px;
+}
+.coi-meter-track {
+  position: relative;
+  height: 10px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #2ecc71 0%, #f1c40f 35%, #e67e22 65%, #e03131 100%);
+}
+.coi-meter-marker {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 18px;
+  background: black;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 1px white;
+}
+.coi-meter-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.coi-conclusion {
+  text-align: center;
+  font-weight: bold;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.coi-conclusion.tier-safe    { background: #eaf9ef; color: #1e7b34; }
+.coi-conclusion.tier-caution { background: #fef8e5; color: #8a6d00; }
+.coi-conclusion.tier-warning { background: #fdeee1; color: #a45311; }
+.coi-conclusion.tier-danger  { background: #fceaea; color: #b02a2a; }
+
+.coi-relationship {
+  font-size: 13px;
+  color: #333;
+  margin: 6px 0 0;
+}
+

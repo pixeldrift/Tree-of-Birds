@@ -23,9 +23,10 @@ the header to load your own CSV/TSV.
   control how much of the tree is shown around your current selection, and whether
   consanguineous pairings (the two birds share a common ancestor) are highlighted in red
 - The **Bird Info** sidebar on the right lists a card per selected bird, with its
-  mother/father/offspring as clickable links that add them to the selection too — this is
-  also where bird-level actions (like a future COI calculation between two selected birds)
-  will live
+  mother/father/offspring as clickable links that add them to the selection too
+- With exactly two birds selected, the **Coefficient of Inbreeding** button at the bottom
+  of the sidebar reports how they're related and whether they're safe to breed together
+  (see below)
 
 ## Data format
 
@@ -114,6 +115,12 @@ $$F_X = \sum \left[ (1/2)^n \times (1 + F_A) \right]$$
 5. **Sum the values** — add the results together across all paths/common ancestors, then
    multiply by 100 for a percentage.
 
-This isn't implemented in the app yet — the pedigree data model (`motherID`/`fatherID`
-chains) already supports the ancestor-tracing this needs, so it's the natural next
-feature once the tree view above is solid.
+The app implements this as a sidebar tool: select any two birds and click **Coefficient
+of Inbreeding** at the bottom of the Bird Info panel for a report on their relatedness (R),
+their potential offspring's inbreeding coefficient (F), a health meter, a plain-language
+relationship summary (siblings, half-siblings, share a grandparent, etc.), and a
+breed/don't-breed conclusion. Same-sex pairs get a message instead, since they can't be
+bred. Rather than the path-counting method above, the app computes this with the
+equivalent (and more robust with real-world pedigrees) recursive kinship-coefficient
+method, which handles arbitrarily tangled inbreeding loops without needing to enumerate
+pedigree paths by hand.

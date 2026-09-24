@@ -51,6 +51,21 @@
     <div id="sidebar">
       <h3>Bird Info</h3>
       <div id="info"><em>No birds selected</em></div>
+
+      <div id="sidebar-tools">
+        <button id="coiToolBtn" class="tool-btn">🧬 Coefficient of Inbreeding</button>
+      </div>
+
+      <div id="coiPanel" class="tool-panel" style="display:none;">
+        <div class="tool-panel-header">
+          <strong>Coefficient of Inbreeding</strong>
+          <span class="tool-panel-header-actions">
+            <button id="coiInfoBtn" class="info-btn" title="What does this mean?">ⓘ</button>
+            <button id="coiCloseBtn" class="close-btn" title="Close">&times;</button>
+          </span>
+        </div>
+        <div id="coiContent"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -110,6 +125,44 @@
         <tr><td>004</td><td>Finch</td><td>M</td><td>001</td><td>002</td></tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Coefficient of Inbreeding info popup -->
+<div id="coiInfoModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Coefficient of Inbreeding</h3>
+    <p>Breeding a pair of related animals produces more consistent, predictable traits in
+      their offspring, but also causes harmful side effects: lower fertility, smaller
+      offspring, early mortality, and shorter lifespan. The higher the level of inbreeding,
+      the greater those detrimental effects.</p>
+    <p>The <strong>coefficient of inbreeding (F)</strong> estimates how inbred a potential
+      offspring would be, as a percentage of its genes expected to be identical by descent
+      (inherited as the same copy from an ancestor on both sides of its pedigree). The
+      <strong>coefficient of relatedness (R)</strong> is a related measure of how closely the
+      two parents themselves are related to each other.</p>
+
+    <h4>Reference values</h4>
+    <table class="sample-table">
+      <thead>
+        <tr><th>Pairing</th><th>COI</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Animal mated to its own parent</td><td>25%</td></tr>
+        <tr><td>Full-sib matings (share both parents)</td><td>25%</td></tr>
+        <tr><td>Half-sib matings (share one parent)</td><td>12.5%</td></tr>
+        <tr><td>Single common great-grandparent</td><td>3.1%</td></tr>
+        <tr><td>No known common ancestor</td><td>0%</td></tr>
+      </tbody>
+    </table>
+
+    <h4>How it's calculated</h4>
+    <p>This app computes the exact coefficient of kinship between the two selected birds
+      using the standard recursive method (equivalent to Wright's path coefficient formula,
+      summing (1/2)ⁿ over every shared ancestor's contribution) — the same value as the
+      inbreeding coefficient their offspring would have.</p>
+    <p>More info: <a href="https://www.instituteofcaninebiology.org/blog/coi-faqs-understanding-the-coefficient-of-inbreeding" target="_blank" rel="noopener">COI FAQs — Institute of Canine Biology</a></p>
   </div>
 </div>
 
