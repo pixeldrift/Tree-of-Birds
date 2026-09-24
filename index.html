@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tree of Birds</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js"></script>
+</head>
+<body>
+<div id="toolbar">
+  <div class="row">
+    <h1><img id="logo" src="images/Tree Egg Logo.png" alt=""> Tree <span>of</span> Birds</h1>
+    <label><input type="checkbox" id="toggleConsang" checked> Highlight consanguineous pairings</label>
+    <span id="stats"></span>
+  </div>
+  <div class="row">
+    <input id="birdSearch" list="birdOptions" placeholder="Search a bird by name…" autocomplete="off">
+    <datalist id="birdOptions"></datalist>
+    <button id="addBirdBtn">Add to tree</button>
+    <label><input type="checkbox" id="showParents" checked> Parents</label>
+    <label><input type="checkbox" id="showSiblings" checked> Siblings</label>
+    <label><input type="checkbox" id="showOffspring" checked> Offspring</label>
+    <label><input type="checkbox" id="showAll"> Show entire collection</label>
+    <div id="selectedChips"></div>
+  </div>
+</div>
+<div id="viewport">
+  <div id="canvas"></div>
+  <div id="emptyState">Search for a bird above, or check "Show entire collection".</div>
+  <div id="zoomControls">
+    <button id="zoomInBtn" title="Zoom in">+</button>
+    <button id="zoomOutBtn" title="Zoom out">−</button>
+    <button id="fitBtn" title="Fit to screen">⤢</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

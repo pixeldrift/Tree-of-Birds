@@ -1,544 +1,75 @@
-
-/* -------------------- Colors & Fonts -------------------- */
-@font-face {
-  font-family: "Game of Thrones";
-  src: url("Game of Thrones.ttf");
-}
-
-:root {
-  --lightPink: #FFE9F0;
-  --darkPink: #ED81A0;
-  --lightBlue: #E1F5FF;
-  --darkBlue: #2EAAE4;
-  --systemNavy: #2A4D69;
-  --systemGray: #A0A0A0;
-  --systemLightGray: #F7F7F7;
-  --systemGold: #EFBF04;
-}
-
-html, body {
-  height: 100%;
-  margin: 0;
-  font-family: sans-serif;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* -------------------- Header -------------------- */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--systemNavy);
-  color: white;
-  padding: 0 30px;
-  letter-spacing: 0.3rem;
-}
-
-h2 {
-  font-size: 30px;
-  font-family: "Game of Thrones";
-  color: var(--systemGold);
-}
-h2 span {
-  font-size: 0.7em;
-  position: relative;
-  bottom: 0.15em;
-}
-
-#logo {
-  width: 60px;
-  height: auto;
-  vertical-align: middle;
-}
-
-
-/* -------------------- Content -------------------- */
-#content {
-  display: flex;
-  flex: 1;
-  min-height: 400px;
-  position: relative;
-}
-
-#graph-container {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-  background: white;
-}
-
-#graph {
-  width: 100%;
-  height: 100%;
-  border: 1px solid var(--systemGray);
-  background: white;
-}
-
-#intro-message, #bird-table-placeholder {
-  color: var(--systemNavy);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  font-size: 1.2em;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5em;
-}
-
-/* -------------------- Sidebar -------------------- */
-
-#sidebar-wrapper {
-  display: flex;
-  height: 100%;
-  position: relative; /* ensures resizer can be absolute inside */
-}
-
-#sidebar {
-  width: 300px;          /* set initial width */
-  min-width: 200px;
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  background: var(--systemLightGray);
-  transition: width 0.05s linear; /* smooth width change */
-}
-
-#sidebar h3 {
-  width: 100%;           /* make header fill the sidebar */
-  background-color: var(--systemGray);
-  padding: 10px;
-  margin: 0;
-  position: sticky;
-  top: 0;
-  border-bottom: 1px solid black;
-  z-index: 2;
-}
-
-#sidebar-resizer {
-  width: 4px;
-  cursor: ew-resize;
-  background-color: var(--systemNavy);  /* temporary for testing */
-  z-index: 999;
-}
-
-#sidebar-resizer:hover {
-  background-color: var(--systemGold);
-}
-
-/* Sidebar info area */
-#info {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-}
-
-/* -------------------- Info Card -------------------- */
-
-.info-card {
-  border: 1px solid;
-  border-left: 6px solid;
-  border-radius: 6px;
-  padding: 6px;
-  margin-bottom: 10px;
-  color: black;
-  background-color: white;
-}
-
-.info-card strong {
-  display: block;
-  color: black;
-  font-size: 1.2em;
-  margin-bottom: 4px;
-}
-
-/* Header row with close button */
-.info-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.info-card-header strong {
-  font-size: 18px;
-  margin: 0;
-}
-.info-card-header .close-btn {
-  cursor: pointer;
-  font-weight: bold;
-  color: black;
-  font-size: 1.2em;
-}
-
-.info-card img.bird-thumb {
-  height: 100px;
-  width: auto;
-  border-radius: 8px;
-  padding: 20px;
-  background-color: white;
-}
-
-.info-card.male img.bird-thumb {
-  border: 2px solid var(--darkBlue);
-}
-.info-card.female img.bird-thumb {
-  border: 2px solid var(--darkPink);
-}
-
-
-/* Male / Female accent */
-.info-card.male {
-  border-color: var(--darkBlue);
-  background-color: var(--lightBlue);
-}
-.info-card.female {
-  border-color: var(--darkPink);
-  background-color: var(--lightPink);
-}
-
-/* Key/value table styling */
-.info-card td {
-  padding: 2px 6px;
-  vertical-align: top;
-}
-.info-card-key {
-  font-weight: bold;
-}
-
-/* Parent / offspring link styles */
-.info-card .parent,
-.info-card .offspring {
-  cursor: pointer;
-  display: inline-block;
-  margin-right: 6px;
-  transition: transform 0.1s, opacity 0.1s;
-}
-
-.info-card .offspring:hover,
-.info-card .parent:hover {
-  opacity: 0.8;
-  transform: scale(1.03);
-}
-
-/* Sex-based color text inside card */
-.info-card .male {
-  color: var(--darkBlue);
-}
-.info-card .female {
-  color: var(--darkPink);
-}
-
-/* Smaller font for offspring list */
-.info-card .offspring-list {
-  font-size: 0.8em;
-  line-height: 1.3;
-}
-
-
-/* -------------------- Bottom List Pane -------------------- */
-
-#list-pane {
-  position: relative;
-  flex-shrink: 0;
-  height: 300px;       /* starting height */
-  min-height: 100px;
-  max-height: 600px;
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid black;
-}
-
-/* Bottom pane resizer (visible) */
-#list-resizer {
-  position: absolute;
-  top: -4px;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  cursor: ns-resize;
-  background-color: var(--systemNavy);
-  z-index: 20;
-  transition: background-color 0.2s;
-}
-
-#list-resizer:hover {
-  background-color: var(--systemGold);
-}
-
-/* Bottom pane header fills width */
-#list-pane h3 {
-  flex-shrink: 0;
-  width: 100%;
-  background-color: var(--systemGray);
-  padding: 10px;
-  margin: 0;
-  position: sticky;
-  top: 4px;
-  z-index: 2;
-  border-bottom: 1px solid black;
-}
-
-/* -------------------- Bird List Table -------------------- */
-
-/* Container for the table */
-#bird-list {
-  flex: 1;           /* fill remaining space under header */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Make the DataTables wrapper fill the container */
-#bird-table_wrapper {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  height: 100%;
-}
-
-.dataTables_scrollBody {
-  overflow-y: auto;
-}
-
-#bird-table {
-  width: 100% !important;
-  border-spacing: 0 6px;
-  table-layout: fixed;
-  padding: 0 20px 0 20px;
-}
-
-.dataTables_scrollHeadInner,
-.dataTables_scrollBody table {
-  width: 100% !important;
-  table-layout: fixed;
-}
-
-#bird-table tbody {
-  display: block;
-  overflow-y: auto;
-  flex: 1;
-}
-
-#bird-table thead, #bird-table tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-#bird-table tbody tr:focus,
-#bird-table tbody tr:active {
-  outline: none !important;
-  background-color: inherit !important;
-  box-shadow: none !important;
-}
-
-/* Table header styling */
-#bird-table thead th {
-  text-align: left;
-  padding: 8px 12px;
-  background-color: white;
-  border-bottom: 4px solid var(--systemGray);
-}
-
-/* Cells */
-#bird-table td {
-  padding: 4px 10px;
-  vertical-align: middle;
-  border-right: 1px dotted white;
-}
-
-/* Row appearance */
-#bird-table tbody tr {
-  display: table-row;
-}
-
-/* Need to round corners of specific TDs, TR doesn't work */
-#bird-table tbody tr td:first-child {
-  border-radius: 8px 0 0 8px;
-}
-#bird-table tbody tr td:last-child {
-  border-radius: 0 8px 8px 0;
-}
-
-/* Gender-based coloring */
-#bird-table tbody tr.male td {
-  background-color: var(--lightBlue);
-}
-
-#bird-table tbody tr.female td {
-  background-color: var(--lightPink);
+:root{
+  --lightPink:#ffd6e8; --darkPink:#d6336c;
+  --lightBlue:#cfe8ff; --darkBlue:#1c6dd0;
+  --consang:#e03131;
 }
 
-/* Hover effect */
-#bird-table tbody tr.female:hover {
-  border: 2px solid var(--darkBlue);
-  cursor: pointer;
+html, body{
+  margin:0; padding:0; height:100%; overflow:hidden;
+  background:#faf9f7; font-family:system-ui, sans-serif;
 }
-#bird-table tbody tr.female:hover {
-  border: 2px solid var(--darkPink);
-  cursor: pointer;
-}
-
-/* Neutralize DataTables' default selection styles */
-table.dataTable tbody tr.selected,
-table.dataTable tbody tr.selected > * {
-  background-color: transparent !important;
-  color: inherit !important;
-}
-
-/* Override DataTables inline selection color */
-table.dataTable tbody tr.male.selected,
-table.dataTable tbody tr.male.selected > td {
-  background: var(--darkBlue) !important;
-  background-color: var(--darkBlue) !important;
-  color: white !important;
-}
-
-table.dataTable tbody tr.female.selected,
-table.dataTable tbody tr.female.selected > td {
-  background: var(--darkPink) !important;
-  background-color: var(--darkPink) !important;
-  color: white !important;
-}
 
-/* Border radius doesn't work on TR except for shadow! */
-#bird-table tbody tr.selected {
-  border-radius: 8px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, .5);
-  overflow: ;
+#toolbar{
+  background:#fff; border-bottom:1px solid #ddd;
+  display:flex; flex-direction:column; gap:6px; padding:8px 14px;
+  font-size:13px;
 }
-
-/* Gender-colored selected states */
-#bird-table tbody tr.male.selected td {
-  background-color: var(--darkBlue) !important;
-  font-weight: bold;
-  border: 2px solid var(--darkBlue);
+#toolbar .row{ display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+#toolbar label{ display:flex; gap:4px; align-items:center; cursor:pointer; white-space:nowrap; }
+#toolbar button{
+  cursor:pointer; border:1px solid #ccc; background:#f5f5f5; border-radius:5px;
+  padding:3px 8px; font-size:12px;
 }
+#toolbar button:hover{ background:#eee; }
 
-#bird-table tbody tr.female.selected td {
-  background-color: var(--darkPink) !important;
-  font-weight: bold;
-  border: 2px solid var(--darkPink);
-}
+h1{ display:flex; align-items:center; gap:8px; font-size:18px; margin:0; }
+h1 span{ color:var(--darkPink); font-style:italic; }
+#logo{ height:26px; width:auto; }
 
-/* Make the sex symbols stand out */
-#bird-table td:nth-child(2) {
-  font-weight: bold;
-  font-size: 18px;
+#birdSearch{ padding:3px 6px; font-size:12px; width:220px; }
+#selectedChips{ display:flex; gap:6px; flex-wrap:wrap; }
+.chip{
+  display:flex; align-items:center; gap:5px; background:#eef1f5; border:1px solid #ccd;
+  border-radius:14px; padding:2px 4px 2px 10px; font-size:12px;
 }
+.chip button{ border:none; background:none; cursor:pointer; font-size:13px; line-height:1; padding:2px 6px; border-radius:50%; }
+.chip button:hover{ background:#ddd; }
+#stats{ color:#666; margin-left:auto; }
 
-/* DataTables search input inside header (if we re-add it later) */
-#bird-list .dataTables_filter input {
-  padding: 4px 8px;
-  font-size: 14px;
-  width: 150px;
-  border-radius: 4px;
+#viewport{
+  position:relative; overflow:hidden; height:calc(100vh - 84px);
+  background:
+    linear-gradient(#eee 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, #eee 1px, transparent 1px) 0 0 / 40px 40px,
+    #faf9f7;
+  cursor:grab;
 }
+#viewport.panning{ cursor:grabbing; }
+#canvas{ position:absolute; top:0; left:0; transform-origin:0 0; }
 
-/* Ascending arrow */
-#bird-table th.sorting_asc::after, #bird-table th.sorting_desc::after {
-  color: var(--systemNavy);
+#emptyState{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:#888; font-size:15px; text-align:center; pointer-events:none;
 }
-
 
-/* -------------------- Info Cards -------------------- */
-
-.info-card {
-  border: 2px solid;
-  border-radius: 8px;
-  padding: 6px;
-  margin-bottom: 10px;
-  color: black;
-  font-size: 14px;
-}
-.info-card.male {
-  border-color: var(--darkBlue);
-  background-color: var(--lightBlue);
+.node-card{
+  position:absolute; box-sizing:border-box; border-radius:8px; border:2px solid #999;
+  background:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;
+  text-align:center; padding:2px 6px; cursor:pointer; user-select:none; line-height:1.2;
 }
-.info-card.female {
-  border-color: var(--darkPink);
-  background-color: var(--lightPink);
-}
-.info-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.info-card-header .close-btn {
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 1.2em;
-  color: black;
-  margin-right: 8px;
-}
+.node-card.female{ background:var(--lightPink); border-color:var(--darkPink); }
+.node-card.male{ background:var(--lightBlue); border-color:var(--darkBlue); }
+.node-card.selected{ box-shadow:0 0 0 3px #222; z-index:2; }
 
-.info-card tr, .info-card td {
-  padding: 2px 6px 2px 6px;
-}
+.pairing-dot{ position:absolute; width:10px; height:10px; border-radius:50%; background:#aaa; }
+.pairing-dot.consang{ background:var(--consang); width:14px; height:14px; margin:-2px; }
 
-/* -------------------- Modal -------------------- */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 10;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.5);
-}
-.modal-content {
-  background-color: white;
-  margin: 10% auto;
-  padding: 20px 30px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  color: black;
-}
-.modal-content h3 {
-  margin-top: 0;
-  color: var(--systemNavy);
-}
-.modal-content pre {
-  background: var(--systemLightGray);
-  padding: 10px;
-  border-radius: 4px;
-}
-.modal-content .sample-table {
-  border-collapse: collapse;
-  width: 100%;
-  color: black;
-}
-.modal-content .sample-table td {
-  border: 1px solid var(--systemGray);
-  padding: 2px 4px;
-  text-align: right;
-  vertical-align: top;
-}
-.modal-content .close-btn {
-  float: right;
-  cursor: pointer;
-  font-weight: bold;
-  color: black;
-}
+svg.edges{ position:absolute; top:0; left:0; pointer-events:none; overflow:visible; }
+.edge-line{ fill:none; stroke:#ccc; stroke-width:1.5; }
+.edge-line.consang{ stroke:var(--consang); stroke-width:2.5; }
 
-.close-modal {
-  float: right;
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  color: black;
+#zoomControls{ position:absolute; bottom:16px; right:16px; display:flex; flex-direction:column; gap:4px; }
+#zoomControls button{
+  width:30px; height:30px; border-radius:6px; border:1px solid #ccc; background:#fff;
+  font-size:16px; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.15);
 }
-.close-modal:hover {
-  color: var(--systemGray);
-}
-

@@ -1,4 +1,4 @@
-const DATA_FILE = "../Geneology Sample Data - Sheet1.tsv";
+const DATA_FILE = "data/Geneology Sample Data - Sheet1.tsv";
 
 let birds = [];
 let byId = new Map();
