@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tree of Birds — Dagre Layout Prototype</title>
+<script src="vendor/papaparse.min.js"></script>
+<script src="vendor/dagre.min.js"></script>
+<style>
+  :root{
+    --lightPink:#ffd6e8; --darkPink:#d6336c;
+    --lightBlue:#cfe8ff; --darkBlue:#1c6dd0;
+    --consang:#e03131;
+  }
+  html,body{margin:0;padding:0;background:#faf9f7;font-family:system-ui,sans-serif;}
+  #toolbar{
+    position:fixed;top:0;left:0;right:0;padding:8px 14px;background:#fff;
+    border-bottom:1px solid #ddd;z-index:10;display:flex;gap:16px;align-items:center;
+    font-size:14px;
+  }
+  #toolbar label{display:flex;gap:4px;align-items:center;cursor:pointer;}
+  #wrap{position:relative;padding-top:50px;}
+  .node-card{
+    position:absolute; box-sizing:border-box; border-radius:8px; border:2px solid #999;
+    background:#fff; font-size:11px; display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:2px 6px; cursor:pointer; user-select:none; line-height:1.2;
+  }
+  .node-card.female{ background:var(--lightPink); border-color:var(--darkPink); }
+  .node-card.male{ background:var(--lightBlue); border-color:var(--darkBlue); }
+  .node-card.dim{ opacity:.25; }
+  .node-card.focus{ box-shadow:0 0 0 3px #222; z-index:2; }
+  .pairing-dot{ position:absolute; width:10px; height:10px; border-radius:50%; background:#aaa; }
+  .pairing-dot.consang{ background:var(--consang); width:14px; height:14px; margin:-2px; }
+  svg.edges{ position:absolute; top:0; left:0; pointer-events:none; }
+  .edge-line{ fill:none; stroke:#ccc; stroke-width:1.5; }
+  .edge-line.consang{ stroke:var(--consang); stroke-width:2.5; }
+  .edge-line.dim{ opacity:.15; }
+  #stats{ color:#555; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <strong>Tree of Birds</strong> — Dagre layout prototype (no marriage semantics, free/open-source layout)
+  <label><input type="checkbox" id="toggleConsang" checked> Highlight consanguineous pairings</label>
+  <span id="stats"></span>
+</div>
+<div id="wrap"><div id="canvas" style="position:relative;"></div></div>
+<script src="dagre-prototype.js"></script>
+</body>
+</html>
