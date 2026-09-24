@@ -1,14 +1,22 @@
 # Tree of Birds
 
-An interactive pedigree/family-tree viewer for tracking bird breeding lines — upload a
-spreadsheet of birds and their parents, then explore any bird's ancestors, siblings, and
-offspring as a generation-aligned tree.
+An interactive pedigree/family-tree viewer for tracking bird breeding lines — explore any
+bird's ancestors, siblings, and offspring as a generation-aligned tree.
 
 ## Try it
 
-Open `index.html` in a browser (or visit the GitHub Pages URL for this repo, if enabled).
+This needs to be served over `http(s)://`, not opened directly as a `file://` path —
+browsers block the sample data fetch otherwise. Easiest options:
+
+- **GitHub Pages**: enable it once under the repo's Settings → Pages → deploy from
+  `main` / `/ (root)`, then open the URL it gives you.
+- **Locally**: from the repo root, run a static server (e.g. `python3 -m http.server`)
+  and open `index.html` through it.
+
 It loads the sample pedigree in [`data/`](data) automatically — search for a bird by name,
-or check **Show entire collection** to see everything at once.
+or check **Show entire collection** to see everything at once. Loading your own data from
+a file isn't wired up yet (the old vis-network version had a file picker; it hasn't been
+ported to this version — see below).
 
 - **Pan**: click and drag the background
 - **Zoom**: scroll wheel, or the `+` / `−` / fit buttons in the bottom-right
@@ -20,7 +28,8 @@ or check **Show entire collection** to see everything at once.
 
 ## Data format
 
-Bring your own data as a `.csv` or `.tsv` file with these columns:
+This is the format the app expects (see `data/Geneology Sample Data - Sheet1.tsv` for a
+full example) — the columns to match once file upload is wired back in:
 
 | Column     | Required | Notes                                   |
 |------------|----------|------------------------------------------|
