@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tree of Birds</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+
+<header>
+  <h2>Tree <span>of</span> Birds <img id="logo" src="images/Tree Egg Logo.png"></h2>
+  <input type="file" id="fileInput" accept=".csv,.tsv">
+</header>
+
+<div id="content">
+  <div id="graph-container">
+    <div id="graph"></div>
+    <div id="intro-message"></div>
+  </div>
+
+  <div id="sidebar-wrapper">
+    <div id="sidebar-resizer"></div>
+    <div id="sidebar">
+      <h3>Bird Info</h3>
+      <div id="info"><em>No birds selected</em></div>
+    </div>
+  </div>
+</div>
+
+<div id="list-pane">
+  <div id="list-resizer"></div>
+  <h3>
+    Bird List
+    <div id="bird-table-search" style="display:inline-block; float:right;"></div>
+  </h3>
+
+  <table id="bird-table" class="display" style="width:100%">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Sex</th>
+        <th>Name</th>
+        <th>Mutation</th>
+        <th>Subspecies</th>
+        <th>Species</th>
+        <th>Scientific Name</th>
+        <th>Family</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be populated by JS -->
+    </tbody>
+  </table>
+
+</div>
+
+<!-- Learn More Popup Popup -->
+<div id="learnMoreModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Data Format Guide</h3>
+    <p>Upload a CSV or TSV file that includes the following column headers:</p>
+    <pre>id, name, sex, motherID, fatherID</pre>
+    <p><strong>Notes:</strong></p>
+    <ul>
+      <li>ID numbers must be unique, may be zero padded.</li>
+      <li>Sex should be <code>M</code> or <code>F</code>.</li>
+      <li>Parents (motherID, fatherID) refer to other IDs in the same file.</li>
+    </ul>
+
+    <h4>Example:</h4>
+    <table class="sample-table">
+      <thead>
+        <tr><th>id</th><th>name</th><th>sex</th><th>motherID</th><th>fatherID</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>001</td><td>Bluejay</td><td>F</td><td></td><td></td></tr>
+        <tr><td>002</td><td>Robin</td><td>M</td><td></td><td></td></tr>
+        <tr><td>003</td><td>Sparrow</td><td>F</td><td>001</td><td>002</td></tr>
+        <tr><td>004</td><td>Finch</td><td>M</td><td>001</td><td>002</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<template id="info-card-template">
+  <div class="info-card">
+    <div class="info-card-header">
+      <strong class="bird-name"></strong>
+      <span class="close-btn">&times;</span>
+    </div>
+    <table>
+      <tr><td class="info-card-key">ID</td><td class="bird-id"></td></tr>
+      <tr><td colspan="2"><img class="bird-thumb" src="#" alt="Bird Image"></td></tr>
+      <tr><td class="info-card-key">Mutation</td><td class="mutation"></td></tr>
+      <tr><td class="info-card-key">Subspecies</td><td class="subspecies"></td></tr>
+      <tr><td class="info-card-key">Species</td><td class="species"></td></tr>
+      <tr><td class="info-card-key">Scientific Name</td><td class="scientific-name"></td></tr>
+      <tr><td class="info-card-key">Family</td><td class="scifamily"></td></tr>
+      <tr><td class="info-card-key">Mother</td><td class="mother parent"></td></tr>
+      <tr><td class="info-card-key">Father</td><td class="father parent"></td></tr>
+      <tr><td class="info-card-key">Offspring</td><td class="offspring-list"></td></tr>
+    </table>
+  </div>
+</template>
+
+
+  <script src="birdImages.js"></script>
+  <script src="main.js"></script>
+
+</body>
+</html>

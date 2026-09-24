@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tree of Birds</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+
+@font-face {
+  font-family: Game of Thrones; /* set name */
+  src: url(Game of Thrones.ttf); /* url of the font */
+}
+
+:root { /* global scope colors*/
+  --lightPink: #FFE9F0;
+  --darkPink: #FD81B0;
+  --lightBlue: #E1F5FF;
+  --darkBlue: #2EAAE4;
+  --systemNavy: #2a4d69;
+  --systemGray: #a0a0a0;
+  --systemLightGray: #f7f7f7;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: sans-serif;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+h2 {
+  font-size: 30px;
+  color: white;
+  font-family: "Game of Thrones";
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--systemNavy);
+  color: white;
+  padding: 0 20px;
+  letter-spacing: 0.3rem;
+}
+
+#content {
+  display: flex;
+  flex: 1;
+  min-height: 400px;
+}
+
+#graph-container {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+#graph {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--systemGray);
+  background: white;
+}
+
+
+/* ----------------------------
+   Sidebar & List Pane Layout
+---------------------------- */
+
+#sidebar-wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  position: relative;  /* ensures absolute resizers stay inside */
+}
+
+#sidebar {
+  position: relative;
+  flex: 0 0 300px;       /* initial width */
+  min-width: 200px;
+  max-width: 600px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--systemLightGray);
+  border-left: 2px solid var(--systemGray);
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+  transition: width 0.05s linear;
+}
+
+/* Optional: hide scrollbar until hover */
+#sidebar:hover {
+  overflow-y: auto;
+}
+
+/* Sidebar resizer (drag handle) */
+#sidebar-resizer {
+  position: absolute;
+  right: -4px;  /* slightly outside edge */
+  top: 0;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  background: transparent;
+  z-index: 10;
+  pointer-events: all;
+}
+
+/* ----------------------------
+   Vertical List Pane (inside sidebar)
+---------------------------- */
+#list-pane {
+  position: relative;
+  flex-shrink: 0;
+  height: 300px;        /* default height */
+  min-height: 100px;
+  max-height: 600px;
+  overflow: auto;
+  border-top: 1px solid black;
+  transition: height 0.05s linear;
+  resize: none;          /* prevent native browser resize */
+}
+
+/* List resizer (drag handle) */
+#list-resizer {
+  position: absolute;
+  top: -4px;   /* handle slightly above top edge */
+  left: 0;
+  width: 100%;
+  height: 8px;
+  cursor: ns-resize;
+  background: transparent;
+  z-index: 10;
+  pointer-events: all;
+}
+
+/* Headings inside sidebar and list */
+#sidebar h3,
+#list-pane h3 {
+  width: 100%;
+  background-color: var(--systemGray);
+  padding: 10px;
+  margin: 0 0 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid black;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* Optional: smooth scrollbar styling */
+#sidebar, #list-pane {
+  scrollbar-width: thin;
+  scrollbar-color: var(--systemGray) var(--systemLightGray);
+}
+
+#sidebar::-webkit-scrollbar,
+#list-pane::-webkit-scrollbar {
+  width: 8px;
+}
+
+#sidebar::-webkit-scrollbar-thumb,
+#list-pane::-webkit-scrollbar-thumb {
+  background-color: var(--systemGray);
+  border-radius: 4px;
+}
+
+#sidebar::-webkit-scrollbar-track,
+#list-pane::-webkit-scrollbar-track {
+  background: var(--systemLightGray);
+}
+
+/* Info card styling */
+.info-card {
+  border: 1px solid;
+  border-left: 6px solid;
+  border-radius: 6px;
+  padding: 6px;
+  margin-bottom: 10px;
+  color: black;
+}
+.info-card strong {
+  display: block;
+  color: black;
+  font-size: 1.2em;
+  margin-bottom: 4px;
+}
+.info-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.info-card-header strong {
+  font-size: 20px;
+  margin: 0;      /* remove margin that could push close button down */
+}
+.info-card-header .close-btn {
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
+  font-size: 1.2em;
+}
+.info-card.male {
+  border-color: var(--darkBlue);
+  background-color: var(--lightBlue);
+}
+.info-card.female {
+  border-color: var(--darkPink);
+  background-color: var(--lightPink);
+}
+
+.info-card-key {
+  font-weight: bold;
+  vertical-align: top;
+}
+.info-card .parent, .info-card .offspring {
+  cursor: pointer;
+}
+.info-card.offspring {
+  font-size: 0.9em;
+}
+span.male {
+  color: var(--darkBlue);
+}
+span.female {
+  color: var(--darkPink);
+}
+
+#info {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.bird-row {
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 2px 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.bird-row span {
+  color: black;
+}
+.bird-row.male {
+  border: 1px solid var(--darkBlue);
+  background: var(--lightBlue);
+}
+.bird-row.female {
+  border: 1px solid var(--darkPink);
+  background: var(--lightPink);
+}
+.bird-row.selected span.plus-x {
+  transform: rotate(45deg);
+  font-weight: bold;
+}
+
+#intro-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 1.2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em; /* spacing between lines */
+}
+#intro-message p,
+#intro-message a {
+  display: block; /* ensure they stack */
+}
+
+/* Popup modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+}
+.modal-content {
+  background-color: white;
+  margin: 10% auto;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  color: black;
+}
+.modal-content h3 {
+  margin-top: 0;
+  color: var(--systemNavy);
+}
+.modal-content pre {
+  background: var(--systemLightGray);
+  padding: 10px;
+  border-radius: 4px;
+}
+.modal-content .sample-table {
+  border-collapse: collapse;
+  width: 100%;
+  color: black;
+}
+.modal-content .sample-table td {
+  border: 1px solid var(--systemGray);
+  padding: 2px 4px;
+  text-align: right;
+  vertical-align: top;
+}
+.modal-content .close-btn {
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
+}
+
+.close-modal {
+  float: right;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  color: black;
+}
+.close-modal:hover {
+  color: var(--systemGray);
+}
+
+
+</style>
+
+</head>
+<body>
+
+<header>
+  <h2>Tree <span style="font-size: .7em; position: relative;
+  bottom: .15em;">of</span> Birds</h2>
+  <input type="file" id="fileInput" accept=".csv,.tsv">
+</header>
+
+<div id="content">
+  <div id="graph-container">
+    <div id="graph"></div>
+    <div id="intro-message"></div>
+  </div>
+
+<div id="sidebar-wrapper" style="display:flex; height:100%;">
+    <div id="sidebar">
+      <div id="sidebar-resizer"></div> <!-- invisible drag handle for horizontal resizing -->
+      <h3>Bird Info</h3>
+      <div id="info"><em>No birds selected</em></div>
+    </div>
+    <div id="sidebar-divider"></div>
+  </div>
+</div>
+
+<div id="list-pane">
+  <div id="list-resizer"></div> <!-- Drag handle at the top -->
+  <h3>Bird List</h3>
+  <div id="bird-list"><i>No data loaded</i></div>
+</div>
+
+<!-- Learn More Popup -->
+<div id="learnMoreModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Data Format Guide</h3>
+    <p>Upload a CSV or TSV file that includes the following column headers:</p>
+    <pre>id, name, sex, motherID, fatherID</pre>
+    <p><strong>Notes:</strong></p>
+    <ul>
+      <li>ID numbers must be unique, may be zero padded.</li>
+      <li>Sex should be <code>M</code> or <code>F</code>.</li>
+      <li>Parents (motherID, fatherID) refer to other IDs in the same file.</li>
+    </ul>
+
+    <h4>Example:</h4>
+    <table class="sample-table">
+      <thead>
+        <tr><th>id</th><th>name</th><th>sex</th><th>motherID</th><th>fatherID</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>001</td><td>Bluejay</td><td>F</td><td></td><td></td></tr>
+        <tr><td>002</td><td>Robin</td><td>M</td><td></td><td></td></tr>
+        <tr><td>003</td><td>Sparrow</td><td>F</td><td>001</td><td>002</td></tr>
+        <tr><td>004</td><td>Finch</td><td>M</td><td>001</td><td>002</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+<script>
+const graphContainer = document.getElementById("graph");
+const intro = document.getElementById("intro-message");
+const infoDiv = document.getElementById("info");
+const birdListDiv = document.getElementById("bird-list");
+
+let data = [];
+let selectedBirds = new Set();
+let fileLoaded = false;
+
+let isSidebarDragging = false;
+const sidebarDivider = document.getElementById('sidebar-divider');
+
+document.getElementById("fileInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const delimiter = ext === "tsv" ? "\t" : ",";
+  Papa.parse(file, {
+    header: true,
+    delimiter,
+    complete: results => {
+      data = results.data.filter(d => d.id && d.name);
+      fileLoaded = true;
+      populateList();
+      drawGraph(selectedBirds, data);
+      updateIntro();
+    }
+  });
+});
+
+function populateList() {
+  birdListDiv.innerHTML = '';
+  data.forEach(b => {
+    const gender = (b.sex || b.gender || '').trim().toUpperCase();
+    const row = document.createElement('div');
+    row.className = `bird-row ${gender === 'F' ? 'female' : 'male'}`;
+    if (selectedBirds.has(b.id)) row.classList.add('selected');
+
+    row.innerHTML = `
+      <span class="bird-name">${b.name} (${b.id})</span>
+      <span class="plus-x">+</span>
+    `;
+
+    row.onclick = () => {
+      if (selectedBirds.has(b.id)) selectedBirds.delete(b.id);
+      else selectedBirds.add(b.id);
+      populateList();
+      updateSidebar();
+      drawGraph(selectedBirds, data);
+      updateIntro();
+    };
+
+    birdListDiv.appendChild(row);
+  });
+}
+
+function updateSidebar() {
+  infoDiv.innerHTML = '';
+
+  if (!selectedBirds.size) {
+    infoDiv.innerHTML = '<em>No birds selected</em>';
+    return;
+  }
+
+  selectedBirds.forEach(id => {
+    const bird = data.find(b => b.id === id);
+    if (!bird) return;
+
+    const gender = (bird.sex || bird.gender || '').trim().toUpperCase();
+    const mother = data.find(b => b.id === bird.motherID);
+    const father = data.find(b => b.id === bird.fatherID);
+    const offspring = data.filter(b => b.motherID === bird.id || b.fatherID === bird.id);
+
+    const card = document.createElement('div');
+    card.className = `info-card ${gender === 'F' ? 'female' : 'male'}`;
+    card.innerHTML = `
+      <div class="info-card-header">
+        <strong>${gender === 'F' ? '♀' : '♂'} ${bird.name}</strong>
+        <span class="close-btn">&times;</span>
+      </div>
+      <table>
+        <tr>
+          <td class="info-card-key">ID</td>
+          <td>${bird.id}</td>
+        </tr>
+        <tr>
+          <td class="info-card-key">Mother</td>
+          <td>${mother ? `<span class="female parent" data-id="${mother.id}">♀ ${mother.name} (${mother.id})</span>` : 'Unknown'}</td>
+        </tr>
+        <tr>
+          <td class="info-card-key">Father</td>
+          <td>${father ? `<span class="male parent" data-id="${father.id}">♂ ${father.name} (${father.id})</span>` : 'Unknown'}</td>
+        </tr>
+        <tr>
+          <td class="info-card-key">Offspring</td>
+          <td>${offspring.length ? offspring.map(o => `<span class="${o.sex === 'F' ? 'female' : 'male'} offspring" data-id="${o.id}">${o.sex === 'F' ? '♀' : '♂'} ${o.name} (${o.id})</span>`).join('<br>') : 'None'}</td>
+        </tr>
+      </table>
+    `;
+
+    // Close button behavior
+    card.querySelector('.close-btn').onclick = () => {
+      selectedBirds.delete(id);
+      updateSidebar();
+      drawGraph(selectedBirds, data);
+      populateList();
+    };
+
+    infoDiv.appendChild(card);
+  });
+
+  // Make parents and offspring clickable
+  infoDiv.querySelectorAll('.parent, .offspring').forEach(el => {
+    el.addEventListener('click', e => {
+      const id = e.target.dataset.id;
+      if (id) {
+        selectedBirds.add(id);
+        updateSidebar();
+        populateList();
+        drawGraph(selectedBirds, data);
+      }
+    });
+  });
+}
+
+
+
+function updateIntro() {
+  intro.innerHTML = '';        // clear previous content
+  intro.style.display = 'block';
+
+  if (!fileLoaded) {
+    intro.innerHTML = `
+      <p>To begin, select a data source above. ⬆</p>
+      <a href="#" id="learnMoreLink">Learn more</a>
+    `;
+  } else if (selectedBirds.size === 0) {
+    intro.innerHTML = '<p>Select at least one bird below to explore. ⬇</p>';
+  } else {
+    intro.style.display = 'none';
+  }
+}
+
+
+function drawGraph(selectedSet, allBirds) {
+  const container = document.getElementById("graph");
+  container.innerHTML = "";
+
+  if (!allBirds.length || !selectedSet.size) return;
+
+  const byId = Object.fromEntries(allBirds.map(b => [b.id, b]));
+
+  const related = new Set();
+  function addRelatives(id) {
+    if (!id || related.has(id)) return;
+    related.add(id);
+
+    const bird = byId[id];
+    if (!bird) return;
+
+    if (bird.motherID) addRelatives(bird.motherID);
+    if (bird.fatherID) addRelatives(bird.fatherID);
+
+    allBirds.forEach(child => {
+      if (child.motherID === id || child.fatherID === id) addRelatives(child.id);
+    });
+  }
+  selectedSet.forEach(addRelatives);
+
+  const birdsToShow = Array.from(related).map(id => byId[id]).filter(Boolean);
+
+  const nodes = birdsToShow.map(b => {
+    const gender = (b.sex || b.gender || "").trim().toUpperCase();
+    const group = gender === "F" ? "female" : "male";
+    const isSelected = selectedSet.has(b.id);
+    return {
+      id: b.id,
+      label: `${b.name}\n(${b.id})`,
+      group,
+      borderWidth: isSelected ? 3 : 1,
+      color: {
+        background: "#fff",
+        border: gender === "F" ? "var(--lightPink)" : "var(--lightBlue)",
+        highlight: {
+          background: gender === "F" ? "var(--lightPink)" : "var(--lightBlue)",
+          border: gender === "F" ? "var(--darkPink)" : "var(--darkBlue)"
+        },
+        hover: {
+          background: gender === "F" ? "var(--lightPink)" : "var(--lightBlue)",
+          border: gender === "F" ? "var(--darkPink)" : "var(--darkBlue)"
+        }
+      },
+      font: { color: "#000", size: 16 }
+    };
+  });
+
+  const edges = [];
+  birdsToShow.forEach(b => {
+    if (b.motherID && byId[b.motherID])
+      edges.push({ from: b.motherID, to: b.id, color: "var(--systemLightGray)", arrows: "to" });
+    if (b.fatherID && byId[b.fatherID])
+      edges.push({ from: b.fatherID, to: b.id, color: "var(--systemLightGray)", arrows: "to" });
+  });
+
+  const networkData = {
+    nodes: new vis.DataSet(nodes),
+    edges: new vis.DataSet(edges)
+  };
+
+  const options = {
+    layout: {
+      hierarchical: {
+        direction: "UD",
+        sortMethod: "directed",
+        nodeSpacing: 120,
+        levelSeparation: 150
+      }
+    },
+    edges: {
+      color: "var(--systemLightGray)",
+      smooth: {
+        enabled: true,
+        type: "cubicBezier",
+        forceDirection:
+          "vertical",
+        roundness: 0.4,
+      },
+      arrows: { to: { enabled: true, type: "arrow" } }
+    },
+    nodes: {
+      shape: "box",
+      font: { color: "#000", size: 16 },
+      margin: 8
+    },
+    physics: {
+      enabled: true,
+      solver: "hierarchicalRepulsion",
+      hierarchicalRepulsion: {
+        nodeDistance: 150,
+        avoidOverlap: 0.5
+      }
+    },
+    interaction: { hover: true }
+  };
+
+  const network = new vis.Network(container, networkData, options);
+  network.once('stabilizationIterationsDone', () => network.setOptions({ physics: false }));
+
+}
+
+  // "Learn More" modal behavior //
+  const modal = document.getElementById('learnMoreModal');
+  document.addEventListener('click', e => {
+    if (e.target.id === 'learnMoreLink') {
+      e.preventDefault();
+      modal.style.display = 'block';
+    }
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+  document.querySelector('.close-modal').onclick = () => { modal.style.display = 'none'; };
+
+  updateIntro();
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.getElementById('sidebar');
+  const sidebarResizer = document.getElementById('sidebar-resizer');
+  const listPane = document.getElementById('list-pane');
+  const listResizer = document.getElementById('list-resizer');
+  const contentContainer = document.getElementById('content');
+
+  // ---------------------------
+  // Sidebar horizontal resizing
+  // ---------------------------
+  let isResizingSidebar = false;
+
+  sidebarResizer.addEventListener('mousedown', e => {
+    isResizingSidebar = true;
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isResizingSidebar) return;
+    const containerRect = contentContainer.getBoundingClientRect();
+    let newWidth = e.clientX - containerRect.left;
+    newWidth = Math.min(Math.max(newWidth, 200), 600); // enforce min/max width
+    sidebar.style.width = `${newWidth}px`;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isResizingSidebar) {
+      isResizingSidebar = false;
+      document.body.style.cursor = '';
+    }
+  });
+
+  // ---------------------------
+  // List pane vertical resizing
+  // ---------------------------
+  let isResizingList = false;
+
+  listResizer.addEventListener('mousedown', e => {
+    isResizingList = true;
+    document.body.style.cursor = 'ns-resize';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isResizingList) return;
+    const sidebarRect = sidebar.getBoundingClientRect();
+    // Height is distance from mouse Y to bottom of sidebar
+    let newHeight = sidebarRect.bottom - e.clientY;
+    newHeight = Math.min(Math.max(newHeight, 100), 600); // enforce min/max height
+    listPane.style.height = `${newHeight}px`;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isResizingList) {
+      isResizingList = false;
+      document.body.style.cursor = '';
+    }
+  });
+});
+
+</script>
+
+</body>
+</html>

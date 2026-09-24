@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bird Family Tree Viewer</title>
+<script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  html, body { height: 100%; margin: 0; font-family: sans-serif; }
+  body { display: flex; flex-direction: column; }
+  header {
+    background:#2a4d69; color:white; padding:10px 20px; display:flex; justify-content:space-between; align-items:center;
+  }
+  #content { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+  #mainPane { flex:1; display:flex; overflow:hidden; }
+  #graphContainer { flex:1; border:1px solid #ccc; position:relative; display:flex; justify-content:center; align-items:center; background:#fff; }
+  #sidebar { width:250px; background:#f7f7f7; border-left:1px solid #ccc; padding:10px; overflow-y:auto; }
+  #listContainer { flex:1 1 auto; border-top:1px solid #ccc; overflow:auto; }
+  #divider { height:5px; background:#ccc; cursor:row-resize; }
+  .bird-card { margin-bottom:10px; border-left:6px solid #999; border:1px solid #ccc; padding:8px; border-radius:5px; background:#fff; }
+  .bird-card.F { border-left-color:#ff99aa; }
+  .bird-card.M { border-left-color:#99ccff; }
+  .bird-header { display:flex; justify-content:space-between; align-items:center; font-weight:bold; margin-bottom:5px; }
+  .bird-info { font-size:0.9em; }
+  .bird-list-entry { display:flex; justify-content:space-between; align-items:center; padding:4px 8px; border-bottom:1px solid #eee; cursor:pointer; }
+  .bird-list-entry.M { background:#e6f0ff; }
+  .bird-list-entry.F { background:#ffe6ee; }
+  .icon { font-weight:bold; display:inline-block; transform:rotate(45deg); width:14px; text-align:center; margin-left:5px; }
+  .icon.selected { transform:rotate(0deg); }
+  table { border-collapse:collapse; width:100%; font-size:0.9em; }
+  td { vertical-align:top; padding:2px 4px; }
+  td.key { font-weight:bold; white-space:nowrap; }
+  .offspring-list { padding-left:15px; margin:2px 0; }
+  .intro-msg { font-size:1.1em; color:#666; text-align:center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Bird Family Tree Viewer</h2>
+  <input type="file" id="fileInput" accept=".csv,.tsv" />
+</header>
+
+<div id="content">
+  <div id="mainPane">
+    <div id="graphContainer">
+      <div class="intro-msg" id="introMsg">
+        To begin, select a data source.<br>
+        <img src="https://via.placeholder.com/150" alt="Illustration" style="margin-top:10px;"><br>
+        <a href="#" target="_blank">Learn more about the format</a>
+      </div>
+    </div>
+    <div id="sidebar"></div>
+  </div>
+
+  <div id="divider"></div>
+  <div id="listContainer"></div>
+</div>
+
+<script>
+let data = [];
+let selectedBirds = [];
+let network = null;
+
+const container = document.getElementById("graphContainer");
+const sidebar = document.getElementById("sidebar");
+const listContainer = document.getElementById("listContainer");
+const introMsg = document.getElementById("introMsg");
+
+document.getElementById("fileInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const delimiter = ext === "tsv" ? "\t" : ",";
+  Papa.parse(file, {
+    header:true,
+    delimiter: delimiter,
+    complete: results => {
+      data = results.data.filter(d => d.id && d.name);
+      buildListView();
+      selectedBirds = [];
+      network && network.destroy();
+      network = null;
+      showIntro("Select at least one bird from the list below to begin exploring.");
+    }
+  });
+});
+
+function buildListView() {
+  listContainer.innerHTML = "";
+  data.forEach(b => {
+    const genderClass = (b.sex||"").toUpperCase() === "F"?"F":"M";
+    const div = document.createElement("div");
+    div.className = `bird-list-entry ${genderClass}`;
+    div.dataset.id = b.id;
+    div.innerHTML = `<span>${b.name} (${b.id})</span><span class="icon">+</span>`;
+    div.addEventListener("click", ()=>toggleBirdSelection(b.id));
+    listContainer.appendChild(div);
+  });
+}
+
+function toggleBirdSelection(id){
+  const index = selectedBirds.indexOf(id);
+  if(index>-1) selectedBirds.splice(index,1);
+  else selectedBirds.push(id);
+  updateListViewIcons();
+  drawNetwork();
+  updateSidebar();
+}
+
+function updateListViewIcons(){
+  document.querySelectorAll(".bird-list-entry").forEach(div=>{
+    const id = div.dataset.id;
+    const icon = div.querySelector(".icon");
+    if(selectedBirds.includes(id)) icon.classList.add("selected");
+    else icon.classList.remove("selected");
+  });
+}
+
+function showIntro(msg){
+  introMsg.style.display = "block";
+  introMsg.innerHTML = msg + '<br><img src="https://via.placeholder.com/150" alt="Illustration" style="margin-top:10px;"><br><a href="#" target="_blank">Learn more about the format</a>';
+}
+
+function hideIntro(){
+  introMsg.style.display = "none";
+}
+
+function drawNetwork(){
+  if(!selectedBirds.length){
+    container.innerHTML = "";
+    showIntro("Select at least one bird from the list below to begin exploring.");
+    return;
+  }else hideIntro();
+
+  const nodes = [], edges = [];
+  const byId = Object.fromEntries(data.map(d=>[d.id,d]));
+
+  function gather(ids, visited=new Set()){
+    ids.forEach(id=>{
+      if(!byId[id] || visited.has(id)) return;
+      visited.add(id);
+      const b = byId[id];
+      const genderClass = (b.sex||"").toUpperCase()==="F"?"F":"M";
+      nodes.push({
+        id:b.id,
+        label:`${b.name}\n${b.id}`,
+        color:{background:genderClass==="F"?"#ffccdd":"#cce0ff",border:"#999"},
+        shape:"box",
+        borderWidth:2
+      });
+      if(b.motherID){ edges.push({from:b.motherID,to:b.id,arrows:"to"}); gather([b.motherID],visited); }
+      if(b.fatherID){ edges.push({from:b.fatherID,to:b.id,arrows:"to"}); gather([b.fatherID],visited); }
+    });
+  }
+
+  gather(selectedBirds);
+
+  const networkData = {nodes:new vis.DataSet(nodes), edges:new vis.DataSet(edges)};
+  const options = {
+    layout:{hierarchical:{direction:"UD",sortMethod:"directed"}},
+    nodes:{borderWidth:1, shape:"box"},
+    edges:{smooth:{type:"cubicBezier", forceDirection:"vertical", roundness:0.4}, arrows:{to:{enabled:true}}},
+    physics:false,
+    interaction:{multiselect:true, hover:true, dragNodes:false}
+  };
+
+  if(!network) network = new vis.Network(container, networkData, options);
+  else network.setData(networkData);
+}
+
+function updateSidebar(){
+  sidebar.innerHTML = "";
+  selectedBirds.forEach(id=>{
+    const b = data.find(x=>x.id===id);
+    if(!b) return;
+    const genderClass = (b.sex||"").toUpperCase()==="F"?"F":"M";
+    const card = document.createElement("div");
+    card.className = `bird-card ${genderClass}`;
+    const header = document.createElement("div");
+    header.className="bird-header";
+    header.innerHTML = `${genderClass==="F"?"♀":"♂"} ${b.name}`;
+    const closeBtn = document.createElement("span");
+    closeBtn.style.cursor="pointer";
+    closeBtn.style.fontWeight="bold";
+    closeBtn.innerHTML="×";
+    closeBtn.addEventListener("click",()=>toggleBirdSelection(b.id));
+    header.appendChild(closeBtn);
+    card.appendChild(header);
+
+    const table = document.createElement("table");
+    function addRow(key,val){ const tr=document.createElement("tr"); tr.innerHTML=`<td class="key">${key}</td><td>${val}</td>`; table.appendChild(tr);}
+    addRow("ID",b.id);
+    addRow("Sex",b.sex||"Unknown");
+    addRow("Mother",b.motherID?`${b.motherID} (${getNameByID(b.motherID)})`:"(unknown)");
+    addRow("Father",b.fatherID?`${b.fatherID} (${getNameByID(b.fatherID)})`:"(unknown)");
+    if(b.offspring){
+      const list=b.offspring.split(";").map(o=>`${o} (${getNameByID(o)})`).join("<br>");
+      addRow("Offspring", `<div class="offspring-list">${list}</div>`);
+    }
+    card.appendChild(table);
+    sidebar.appendChild(card);
+  });
+}
+
+function getNameByID(id){
+  const b = data.find(x=>x.id===id);
+  return b?b.name:"Unknown";
+}
+
+// Divider drag
+let isDragging=false;
+const divider=document.getElementById("divider");
+const mainPane=document.getElementById("mainPane");
+divider.addEventListener("mousedown", e=>{ e.preventDefault(); isDragging=true; });
+document.addEventListener("mousemove", e=>{
+  if(!isDragging) return;
+  const rect = mainPane.getBoundingClientRect();
+  let newHeight = e.clientY - rect.top;
+  newHeight=Math.max(100, Math.min(rect.height-50, newHeight));
+  document.getElementById("graphContainer").style.flex="none";
+  document.getElementById("graphContainer").style.height=newHeight+"px";
+  listContainer.style.flex="1 1 auto";
+});
+document.addEventListener("mouseup",()=>isDragging=false);
+</script>
+
+</body>
+</html>

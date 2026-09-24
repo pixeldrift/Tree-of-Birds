@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bird Tree Viewer</title>
+<script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+html, body { height: 100%; margin: 0; font-family: sans-serif; }
+body { display: flex; flex-direction: column; }
+header { display: flex; justify-content: space-between; align-items: center; background: #2a4d69; color: white; padding: 10px 20px; }
+#content { display: flex; flex: 1; overflow: hidden; min-height: 400px; }
+#network-container { flex: 1; position: relative; }
+#network { width: 100%; height: 100%; border: 1px solid #ccc; background: #fff; }
+#sidebar { width: 300px; background: #f7f7f7; border-left: 1px solid #ccc; padding: 10px; overflow-y: auto; }
+#list-pane { height: 200px; resize: vertical; overflow: auto; border-top: 1px solid #ccc; }
+table { border-collapse: collapse; width: 100%; }
+td { padding: 2px 4px; vertical-align: top; }
+.close-btn { float: right; cursor: pointer; font-weight: bold; }
+.bird-row { border-radius: 6px; padding: 4px 8px; margin: 2px 0; display: flex; align-items: center; cursor: pointer; }
+.bird-row.male { border: 1px solid #1e90ff; background: #cce0ff; }
+.bird-row.female { border: 1px solid #ff69b4; background: #ffd6e0; }
+.bird-row.selected { font-weight: bold; transform: rotate(45deg); }
+.info-card { border: 1px solid #ccc; border-left: 6px solid; border-radius: 6px; padding: 6px; margin-bottom: 10px; background: #fff; }
+.info-card.male { border-left-color: #1e90ff; }
+.info-card.female { border-left-color: #ff69b4; }
+.info-key { font-weight: bold; vertical-align: top; }
+.parent, .offspring { font-size: 0.9em; }
+.male { color: #1e90ff; }
+.female { color: #ff69b4; }
+#intro-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; font-size: 1.2em; }
+#intro-message img { width: 150px; height: auto; margin: 10px 0; }
+</style>
+</head>
+<body>
+<header>
+  <h2>Bird Tree Viewer</h2>
+  <input type="file" id="fileInput" accept=".csv,.tsv">
+</header>
+<div id="content">
+  <div id="network-container">
+    <div id="network"></div>
+    <div id="intro-message">
+      <p>To begin, select a data source.</p>
+      <img src="https://via.placeholder.com/150" alt="Format illustration">
+      <p><a href="#" target="_blank">Learn more about required data format</a></p>
+    </div>
+  </div>
+  <div id="sidebar">
+    <h3>Bird Info</h3>
+    <div id="info"><em>No birds selected</em></div>
+  </div>
+</div>
+<div id="list-pane">
+  <h3>Bird List</h3>
+  <div id="bird-list"></div>
+</div>
+
+<script>
+const networkContainer = document.getElementById("network");
+const intro = document.getElementById("intro-message");
+const infoDiv = document.getElementById("info");
+const birdListDiv = document.getElementById("bird-list");
+let data = [];
+let selectedBirds = new Set();
+
+document.getElementById("fileInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const delimiter = ext === "tsv" ? "\t" : ",";
+  Papa.parse(file, {
+    header: true,
+    delimiter,
+    complete: results => {
+      data = results.data.filter(d => d.id && d.name);
+      populateList();
+      drawGraph();
+    }
+  });
+});
+
+function populateList() {
+  birdListDiv.innerHTML = '';
+  data.forEach(b => {
+    const gender = (b.sex||b.gender||'').trim().toUpperCase();
+    const row = document.createElement('div');
+    row.className = `bird-row ${gender==='F'?'female':'male'}`;
+    row.innerHTML = `<span style="flex:1">${b.name} (${b.id})</span><span class="plus-x">${selectedBirds.has(b.id)?'×':'+'}</span>`;
+    row.onclick = () => {
+      if (selectedBirds.has(b.id)) selectedBirds.delete(b.id);
+      else selectedBirds.add(b.id);
+      populateList();
+      updateSidebar();
+      drawGraph();
+    };
+    birdListDiv.appendChild(row);
+  });
+}
+
+function updateSidebar() {
+  infoDiv.innerHTML = '';
+  if (!selectedBirds.size) { infoDiv.innerHTML = '<em>No birds selected</em>'; return; }
+  selectedBirds.forEach(id => {
+    const bird = data.find(b => b.id===id);
+    if (!bird) return;
+    const card = document.createElement('div');
+    const gender = (bird.sex||bird.gender||'').trim().toUpperCase();
+    card.className = `info-card ${gender==='F'?'female':'male'}`;
+    const mother = data.find(b => b.id===bird.motherID);
+    const father = data.find(b => b.id===bird.fatherID);
+    const offspring = data.filter(b => b.motherID===bird.id || b.fatherID===bird.id);
+    card.innerHTML = `
+      <span class="close-btn" onclick="selectedBirds.delete('${id}'); updateSidebar(); drawGraph(); populateList();">&times;</span>
+      <strong>${gender==='F'?'♀':'♂'} ${bird.name}</strong>
+      <table>
+        <tr><td class="info-key">ID</td><td>${bird.id}</td></tr>
+        <tr><td class="info-key">Mother</td><td>${mother?`<span class="female parent">♀ ${mother.name} (${mother.id})</span>`:''}</td></tr>
+        <tr><td class="info-key">Father</td><td>${father?`<span class="male parent">♂ ${father.name} (${father.id})</span>`:''}</td></tr>
+        <tr><td class="info-key">Offspring</td><td>${offspring.map(o=>`<span class="${o.sex==='F'?'female':'male'} offspring">${o.sex==='F'?'♀':'♂'} ${o.name} (${o.id})</span>`).join('<br>')}</td></tr>
+      </table>
+    `;
+    infoDiv.appendChild(card);
+  });
+}
+
+function drawGraph() {
+  if (!selectedBirds.size) {
+    networkContainer.style.display='none';
+    intro.style.display='block';
+    return;
+  } else {
+    networkContainer.style.display='block';
+    intro.style.display='none';
+  }
+
+  const nodes = [];
+  const edges = [];
+  const byId = Object.fromEntries(data.map(d=>[d.id,d]));
+
+  selectedBirds.forEach(selId => {
+    const queue = [selId];
+    const visited = new Set();
+    while(queue.length){
+      const curr = queue.shift();
+      if (visited.has(curr)) continue;
+      visited.add(curr);
+      const bird = byId[curr];
+      if(!bird) continue;
+      const gender = (bird.sex||bird.gender||'').trim().toUpperCase();
+      nodes.push({
+        id: bird.id,
+        label: `${gender==='F'?'♀':'♂'} ${bird.name}\n${bird.id}`,
+        shape: 'box',
+        color: { background: gender==='F'?'#ffd6e0':'#cce0ff', border:'#999' },
+        font: { color: '#333', size: 14 },
+        margin:8
+      });
+      [bird.motherID,bird.fatherID].forEach(pId=>{
+        if(pId && byId[pId]){
+          edges.push({from:pId,to:bird.id,arrows:'to'});
+          queue.push(pId);
+        }
+      });
+      data.filter(b=>b.motherID===bird.id || b.fatherID===bird.id).forEach(child=>{
+        edges.push({from:bird.id,to:child.id,arrows:'to'});
+        queue.push(child.id);
+      });
+    }
+  });
+
+  const network = new vis.Network(networkContainer, {nodes:new vis.DataSet(nodes), edges:new vis.DataSet(edges)}, {
+    layout:{hierarchical:{direction:'UD', sortMethod:'directed', levelSeparation:120, nodeSpacing:120, parentCentralization:true}},
+    nodes:{borderWidth:1, shape:'box', shadow:false},
+    edges:{smooth:{type:'cubicBezier',forceDirection:'vertical',roundness:0.4}, arrows:{to:{enabled:true}}, color:{color:'#555'}},
+    physics:false,
+    interaction:{hover:true, dragNodes:false}
+  });
+
+  network.on("hoverNode", params=>{
+    const node = network.body.data.nodes.get(params.node);
+    node.color.border='#666';
+    network.body.data.nodes.update(node);
+  });
+
+  network.on("blurNode", params=>{
+    const node = network.body.data.nodes.get(params.node);
+    node.color.border='#999';
+    network.body.data.nodes.update(node);
+  });
+}
+</script>
+</body>
+</html>

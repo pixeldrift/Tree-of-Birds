@@ -1,0 +1,139 @@
+id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	scifamily
+001	Rickard Stark	M				Congo	African Grey	Psittacus	erithacus	Psittacidae
+002	Lyarra Stark	F			Normal	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+003	Catelyn Stark (Tully)	F	023	024		Sulfer Crested	Cockatoo	Cacatua	galerita	Cacatuidae
+004	Eddard Stark	M	001	002		Blue Throated	Macaw	Ara	glaucogularis	Psittacidae
+005	Brandon Stark	M	001	002		Dusky	Conure	Pyrrhura	funebris	Psittacidae
+006	Benjen Stark	M	001	002		Jenday	Conure	Aratinga	ararauna	Psittacidae
+007	Lyanna Stark	F	001	002		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+008	Rob Stark	M	004	003		Blue Fronted	Amazon	Amazona	aestiva	Psittacidae
+009	Sansa Stark	F	004	003		Crimson Bellied	Conure	Pyrrhura	perlata	Psittacidae
+010	Arya Stark	F	004	003		Timneh	African Grey	Psittacus	timneh	Psittacidae
+011	Bran Stark	M	004	003		Sun	Conure	Aratinga	solstitialis	Psittacidae
+012	Rickon Stark	M	004	003		Patagonian	Conure	Aratinga	patagonus	Psittacidae
+013	Jon Snow	M	016	007		Black Palm	Cockatoo	Probosciger	aterrimus	Cacatuidae
+014	Aerys II Targaryen	M	095	094		Moluccan	Cockatoo	Cacatua	moluccensis	Cacatuidae
+015	Rhaella Targaryen	F	095	094	Opamint	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+016	Rhaegar Targaryen	M	014	015		Red Fronted	Macaw	Ara	rubrogenys	Psittacidae
+017	Viserys Targaryen	M	016	015		Swainson's	Lorikeet	Trichoglossus	moluccanus	Psittacidae
+018	Daenerys Targaryen	F	016	015		Blue and Gold	Macaw	Ara	ararauna	Psittacidae
+019	Ellia Martell	F	048	049		Greenwinged	Macaw	Ara	chloropterus	Psittacidae
+020	Rhaenys Targaryen	F	016	046		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+021	Aegon Targaryen	M	016	046		Bare Eyed	Cockatoo	Cacatua	sanguinea	Cacatuidae
+022	Brynden Tully	M	042	043		Scarlet	Macaw	Ara	macao	Psittacidae
+023	Hoster Tully	M	042	043		Yellow Knaped	Amazon	Amazona	auropalliata	Psittacidae
+024	Minisa Tully	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+025	Lysa Arryn (Tully)	F	023	024		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+026	Edmure Tully	M	023	024		Jenday	Conure	Aratinga	jandaya	Psittacidae
+027	Walder Frey	M				Sun	Conure	Aratinga	solstitialis	Psittacidae
+028	Roslin Tully (Frey)	F	027			Timneh	African Grey	Psittacus	timneh	Psittacidae
+029	Jon Arryn	M	102	103		Major Mitchell's	Cockatoo	Lophochroa	leadbeateri	Cacatuidae
+030	Robyn Arryn	M	029	025		Cinnamon	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+031	Balon Greyjoy	M	040	041		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+032	Euron Greyjoy	M	040	041		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+033	Yara Greyjoy	F	031	039		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+034	Theon Greyjoy	M	031	039		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+035	Walda Frey	F	027	038		Pionus	Parrot	Pionus	spp.	Psittacidae
+036	Roose Bolton	M				Double Yellowheaded	Amazon	Amazona	oratrix	Psittacidae
+037	Unnamed	U	036	035		Normal	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+038	Unnamed	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+039	Alannys Greyjoy (Harlaw)	F				Nanday	Conure	Nandayus	nenday	Psittacidae
+040	Unnamed Greyjoy	M				Hyacinth	Macaw	Anodorhynchus	hyacinthinus	Psittacidae
+041	Unnamed Greyjoy	F			Pineapple	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+042	Robbyrt Tully	M				Rainbow	Lorikeet	Trichoglossus	moluccanus	Psittacidae
+043	Sansa Lefford	F				Blue Crowned	Conure	Aratinga	acuticaudata	Psittacidae
+044	Ramsay Bolton	M	036		Turqoise	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+045	Doran Martell	M	048	049		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+046	Trystane Martell	M	045	130		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+047	Oberyn Martell	M	048	049		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+048	Lewyn Martell	M				Black Capped	Parakeet	Psittacula	domincana	Psittacidae
+049	Unnamed Martell	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+050	Khal Drogo	M			Cinnamon	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+051	Rheagal			018		Timneh	African Grey	Psittacus	timneh	Psittacidae
+052	Drogon			018		Sulfer Crested	Cockatoo	Cacatua	galerita	Cacatuidae
+053	Viserion			018		Sun	Conure	Aratinga	solstitialis	Psittacidae
+054	Luthor Tyrell	M			Yellow	Black Palm	Cockatoo	Probosciger	aterrimus	Cacatuidae
+055	Olenna Tyrell	F			Green	Jenday	Conure	Aratinga	jandaya	Psittacidae
+056	Mace Tyrell	M	054	055	Blue	Blue and Gold	Macaw	Ara	ararauna	Psittacidae
+057	Alerie Tyrell	F	054	055	Yellow	Goffin's	Cockatoo	Callocephalon	fimbriatum	Cacatuidae
+058	Loras Tyrell	M	056	057		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+059	Margery Tyrell	F	056	057		Military	Macaw	Ara	militaris	Psittacidae
+060	Ellaria Sand	F	047			Blue Fronted	Amazon	Amazona	aestiva	Psittacidae
+061	Obara Sand	F	047			Timneh	African Grey	Psittacus	timneh	Psittacidae
+062	Mymeria Sand	F	047			Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+063	Tyene Sand	F	047	060		Double Yellowheaded	Amazon	Amazona	oratrix	Psittacidae
+064	Selyse Baratheon (Florent)	F			Opaline	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+065	Stannis Baratheon	M	068	069		Crimson Bellied	Conure	Pyrrhura	perlata	Psittacidae
+066	Shireen Baratheon	F	065	064		Pied	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+067	Robert Baratheon	M	068	069		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+068	Unnamed Baratheon	M				Nanday	Conure	Nandayus	nenday	Psittacidae
+069	Unnamed Baratheon	F			Opaline Dilute	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+070	Renly Baratheon	M	068	069		Bare Eyed	Cockatoo	Cacatua	sanguinea	Cacatuidae
+071	Joanna Lannister	F				Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+072	Tywin Lannister	M	074	075		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+073	Kevan Lannister	M	074	075		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+074	Unnamed Lannister	M				Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+075	Unnamed Lannister	F				Black Palm	Cockatoo	Probosciger	aterrimus	Cacatuidae
+076	Cersei Lannister	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+077	Jaime Lannister	M				Timneh	African Grey	Psittacus	timneh	Psittacidae
+078	Tyrion Lannister	M				Sun	Conure	Aratinga	solstitialis	Psittacidae
+079	Gendry	M	067			Cinnamon	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+080	Joffrey Baratheon	M	077	076		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+081	Myrcella Baratheon	F	077	076		Blue Crowned	Conure	Aratinga	acuticaudata	Psittacidae
+082	Tommen Baratheon	M	077	076		Moluccan	Cockatoo	Cacatua	moluccensis	Cacatuidae
+083	Lancel Lannister	M	073	131		Rainbow	Lorikeet	Trichoglossus	moluccanus	Psittacidae
+084	Aemon Targaryen	M	085	086		Blue Throated	Macaw	Ara	glaucogularis	Psittacidae
+085	Maekar I Targaryen	M				Black Palm	Cockatoo	Probosciger	aterrimus	Cacatuidae
+086	Dyanna Dayne	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+087	Daeron Targaryen	M	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+088	Aerion Targaryen	M	085	086	Yellow	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+089	Daella Targaryen	F	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+090	Rehea Targaryen	F	085	086	Green	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+091	Aegon V Targaryen	M	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+092	Betha Blackwood	F				Jenday	Conure	Aratinga	jandaya	Psittacidae
+093	Duncan Targaryen	M	091	092		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+094	Shaera Targaryen	F	091	092		Normal	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+095	Jaehaerys Targaryen	M	091	092		Double Yellowheaded	Amazon	Amazona	oratrix	Psittacidae
+096	Daeron Targaryen	M	091	092		Sun	Conure	Aratinga	solstitialis	Psittacidae
+097	Rhaelle Targaryen	M	091	092		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+098	Sarella Sand	F	047			Yellow Naped	Amazon	Amazona	auropalliata	Psittacidae
+099	Unnamed Sand		047			Swainson's	Lorikeet	Trichoglossus	moluccanus	Psittacidae
+100	Unnamed Sand		047			Congo	African Grey	Psittacus	erithacus	Psittacidae
+101	Unnamed Sand		047			Patagonian	Conure	Aratinga	patagonus	Psittacidae
+102	Jasper Arryn	M				Major Mitchell's	Cockatoo	Lophochroa	leadbeateri	Cacatuidae
+103	Unnamed Arryn	F				Black Capped	Parakeet	Psittacula	domincana	Psittacidae
+104	Randyll Tarly	M				Eclectus	Parrot	Eclectus	roratus	Psittacidae
+105	Melessa Tarly	F				Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+106	Samwell Tarly	M	104	105		Hyacinth	Macaw	Anodorhynchus	hyacinthinus	Psittacidae
+107	Talla Tarly	F	104	105		Timneh	African Grey	Psittacus	timneh	Psittacidae
+108	Dickon Tarly	M	104	105		Pionus	Parrot	Pionus	spp.	Psittacidae
+109	Craster	M				Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+110	Gilly	F	109			Blue Fronted	Amazon	Amazona	aestiva	Psittacidae
+111	Ygritte					Crimson Bellied	Conure	Pyrrhura	perlata	Psittacidae
+112	Hodor					Dusky	Conure	Pyrrhura	funebris	Psittacidae
+113	Jeor Mormont					Black Palm	Cockatoo	Probosciger	aterrimus	Cacatuidae
+114	Bronn				Grey	Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+115	Podrick				Blue	Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
+116	Shae					Blue and Gold	Macaw	Ara	ararauna	Psittacidae
+117	Brienne of Tarth				Opaline	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+118	Lothar	M	027			Military	Macaw	Ara	militaris	Psittacidae
+119	Jorah Mormont	M	113			Greenwinged	Macaw	Ara	chloropterus	Psittacidae
+120	Missandei					Bare Eyed	Cockatoo	Cacatua	sanguinea	Cacatuidae
+121	Grey Worm					Sulfer Crested	Cockatoo	Cacatua	galerita	Cacatuidae
+122	Melisandre					Cinnamon	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+123	Gregor Clegane	M	125	126		Sun	Conure	Aratinga	solstitialis	Psittacidae
+124	Sandor Clegane	M	125	126		Jenday	Conure	Aratinga	jandaya	Psittacidae
+125	Unnamed Clegane	M				Nanday	Conure	Nandayus	nenday	Psittacidae
+126	Unnamed Clegane	F				Goffin's	Cockatoo			
+127	Varys					Sun	Conure			
+128	Maege Mormont	F				Jenday	Conure			
+129	Lyanna Mormont	F		128		Sun	Conure			
+130	Mellario of Norvos	F				Jenday	Conure			
+131	Dorna Swift	F				Nanday	Conure			
+132	Willem Lanniseter	M	073	131	Turqouise	Greencheeked	Conure			
+133	Maetyn Lannister	M	073	131	Normal	Greencheeked	Conure			
+134	Maron Greyjoy	M	031	039		Crimson Bellied	Conure			
+135	Rodrik Greyjoy	M	031	039		Dusky	Conure			
+136	Joanna Tarly	F	106	110		Blue Crowned	Conure			
+	Tarly 2nd Daughter	F	104	105	Normal	Greencheeked	Conure			
+	Tarly 3rd Daughter	F	104	105	Cinnamon	Greencheeked	Conure			

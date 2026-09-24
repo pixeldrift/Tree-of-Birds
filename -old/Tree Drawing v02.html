@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bird Tree Viewer</title>
+<script src="https://unpkg.com/papaparse@5.3.2/papaparse.min.js"></script>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+html, body { height: 100%; margin: 0; font-family: sans-serif; display: flex; flex-direction: column; }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2a4d69;
+  color: white;
+  padding: 10px 20px;
+}
+header input[type=file] { cursor: pointer; }
+
+#content { flex: 1 1 auto; display: flex; overflow: hidden; }
+#graphContainer { flex: 1 1 auto; display: flex; flex-direction: column; border-right: 1px solid #ccc; position: relative; }
+#network { flex: 1 1 auto; border-bottom: 1px solid #ccc; background: #fff; }
+#intro {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #666;
+}
+#intro img { max-width: 150px; margin: 10px 0; }
+
+#sidebar {
+  width: 300px;
+  background: #f7f7f7;
+  padding: 10px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+#divider { height: 5px; background:#ccc; cursor:row-resize; }
+
+#listContainer { height: 200px; overflow-y: auto; background:#f0f0f0; }
+
+.bird-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+.bird-list-item .indicator { font-weight: bold; transform: rotate(45deg); margin-left: 10px; }
+
+.info-card {
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-left-width: 5px;
+  border-radius: 6px;
+  background: #fff;
+}
+.info-card .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+}
+.info-card table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+.info-card td.key { font-weight: bold; width: 90px; vertical-align: top; }
+.info-card td.value { text-align: left; }
+.offspring-list { padding-left: 1em; margin: 0; list-style: none; }
+.offspring-list li { margin-bottom: 2px; }
+.gender-M { color: #3399ff; }
+.gender-F { color: #ff99cc; }
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Bird Tree Viewer</h2>
+  <input type="file" id="fileInput" accept=".csv,.tsv" />
+</header>
+
+<div id="content">
+  <div id="graphContainer">
+    <div id="network"></div>
+    <div id="intro">
+      <h3>To begin, select a data source</h3>
+      <img src="https://via.placeholder.com/150" alt="Format Illustration">
+      <p>CSV/TSV must include at minimum: id, name, sex (M/F). Optional: motherID, fatherID.</p>
+    </div>
+  </div>
+  <div id="sidebar"></div>
+</div>
+
+<div id="divider"></div>
+<div id="listContainer"></div>
+
+<script>
+const container = document.getElementById("network");
+const sidebar = document.getElementById("sidebar");
+const infoDiv = document.getElementById("info");
+const listContainer = document.getElementById("listContainer");
+const intro = document.getElementById("intro");
+
+let data = [];
+let selectedBirds = [];
+
+document.getElementById("fileInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  let delimiter = ext === "tsv" ? "\t" : ",";
+  parseFile(file, delimiter);
+});
+
+function parseFile(file, delimiter) {
+  Papa.parse(file, {
+    header: true,
+    delimiter: delimiter,
+    complete: (results) => {
+      data = results.data.filter(d => d.id && d.name);
+      intro.querySelector("h3").textContent = "Select at least one bird from the list below to begin exploring.";
+      renderList();
+    }
+  });
+}
+
+function renderList() {
+  listContainer.innerHTML = "";
+  data.forEach(b => {
+    const div = document.createElement("div");
+    div.className = "bird-list-item";
+    const genderClass = (b.sex || b.gender || "").toUpperCase() === "F" ? "gender-F" : "gender-M";
+    const plus = document.createElement("span");
+    plus.className = "indicator";
+    plus.textContent = selectedBirds.includes(b.id) ? "×" : "+";
+    div.innerHTML = `<span class="${genderClass}">${b.sex==="F"?"♀":"♂"} ${b.name}</span>`;
+    div.appendChild(plus);
+    div.addEventListener("click", () => toggleBirdSelection(b.id));
+    listContainer.appendChild(div);
+  });
+}
+
+function toggleBirdSelection(id) {
+  const idx = selectedBirds.indexOf(id);
+  if (idx === -1) selectedBirds.push(id);
+  else selectedBirds.splice(idx,1);
+  renderList();
+  drawNetwork();
+  renderSidebar();
+}
+
+function drawNetwork() {
+  if (!selectedBirds.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const nodes = [];
+  const edges = [];
+  const byId = Object.fromEntries(data.map(d => [d.id, d]));
+
+  function gatherBirds(ids, visited = new Set()) {
+    ids.forEach(id => {
+      if (!byId[id] || visited.has(id)) return;
+      visited.add(id);
+      const b = byId[id];
+      const genderClass = (b.sex || "").toUpperCase() === "F" ? "gender-F" : "gender-M";
+      nodes.push({
+        id: b.id,
+        label: `\u{2640}\u{2642}`.includes(b.sex==="F"?"\u2640":"\u2642") ? b.name : b.name,
+        title: `<div>${b.name}<br>ID: ${b.id}</div>`,
+        color: b.sex==="F"?"#ffccdd":"#cce0ff",
+        borderWidth: 2,
+        shape: "box"
+      });
+      if (b.motherID && byId[b.motherID]) { edges.push({from:b.motherID, to:b.id, arrows:"to"}); gatherBirds([b.motherID], visited);}
+      if (b.fatherID && byId[b.fatherID]) { edges.push({from:b.fatherID, to:b.id, arrows:"to"}); gatherBirds([b.fatherID], visited);}
+    });
+  }
+
+  gatherBirds(selectedBirds);
+
+  const networkData = { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) };
+  const options = {
+    layout: { hierarchical: { direction:"UD", sortMethod:"directed", nodeSpacing:120, levelSeparation:180, parentCentralization:true } },
+    nodes:{borderWidth:1, shape:"box"},
+    edges:{smooth:{type:"cubicBezier", forceDirection:"vertical", roundness:0.4}, arrows:{to:{enabled:true}}, color:{color:"#555"}},
+    physics:false,
+    interaction:{multiselect:true, hover:true, dragNodes:false}
+  };
+  new vis.Network(container, networkData, options);
+}
+
+function renderSidebar() {
+  sidebar.innerHTML = "";
+  selectedBirds.forEach(id => {
+    const b = data.find(d => d.id===id);
+    if (!b) return;
+    const card = document.createElement("div");
+    card.className = "info-card";
+    const genderClass = (b.sex || "").toUpperCase() === "F" ? "gender-F" : "gender-M";
+    card.style.borderLeftColor = b.sex==="F"?"#ff99cc":"#3399ff";
+    const header = document.createElement("div");
+    header.className = "header";
+    header.innerHTML = `<span class="${genderClass}">${b.sex==="F"?"♀":"♂"} ${b.name}</span>`;
+    const closeBtn = document.createElement("span");
+    closeBtn.textContent = "×";
+    closeBtn.style.cursor = "pointer";
+    closeBtn.addEventListener("click", () => { toggleBirdSelection(b.id); });
+    header.appendChild(closeBtn);
+    card.appendChild(header);
+
+    const table = document.createElement("table");
+    table.innerHTML = `<tr><td class="key">ID</td><td class="value">${b.id}</td></tr>
+      <tr><td class="key">Mother</td><td class="value">${b.motherID? `<span class="gender-F">${b.motherID}</span>`:"(unknown)"}</td></tr>
+      <tr><td class="key">Father</td><td class="value">${b.fatherID? `<span class="gender-M">${b.fatherID}</span>`:"(unknown)"}</td></tr>
+      <tr><td class="key">Offspring</td><td class="value"><ul class="offspring-list">${data.filter(d=>d.motherID===b.id||d.fatherID===b.id).map(c=>`<li class="${(c.sex||"").toUpperCase()==="F"?"gender-F":"gender-M"}">${c.name} (${c.id})</li>`).join("")}</ul></td></tr>`;
+    card.appendChild(table);
+    sidebar.appendChild(card);
+  });
+}
+
+// Draggable divider
+const divider = document.getElementById("divider");
+const graphContainer = document.getElementById("graphContainer");
+let isDragging = false;
+divider.addEventListener("mousedown", e => { e.preventDefault(); isDragging = true; });
+document.addEventListener("mousemove", e => {
+  if (!isDragging) return;
+  const contentTop = graphContainer.getBoundingClientRect().top;
+  const newHeight = e.clientY - contentTop;
+  graphContainer.style.flex = "none";
+  graphContainer.style.height = `${newHeight}px`;
+});
+document.addEventListener("mouseup", e => { if (isDragging) isDragging=false; });
+</script>
+</body>
+</html>
