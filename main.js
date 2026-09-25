@@ -354,11 +354,12 @@ function updateIntro() {
 const pairKey = (m, f) => `${m || ''}:${f || ''}`;
 const normalizedKey = bird => pairKey(bird.motherID, bird.fatherID);
 
-// A single continuously-smooth curve through Dagre's edge points — no straight run
-// suddenly kinking into a curve at a waypoint (which is what a fresh vertical-tangent
-// bezier at each segment produces). Two points still get a full vertical-tangent S-curve;
-// three or more are fit with a Catmull-Rom-to-bezier spline so the whole line flows as one
-// arc, like maxing out the corner-radius/smooth-points tool in a vector editor.
+// Two points: a vertical-tangent S-curve (bounded to the two points' own box, so it can
+// never overshoot). Three or more: straight segments with each interior waypoint rounded
+// off by a quadratic curve that uses the waypoint itself as the control point — like the
+// "round corners" effect in a vector editor. Because the curve's control point IS the
+// original corner, it stays inside that corner instead of bowing past it the way a fitted
+// spline (e.g. Catmull-Rom) can when the path changes direction sharply.
 function smoothEdgePath(points) {
   if (!points.length) return '';
   if (points.length === 2) {
@@ -366,16 +367,24 @@ function smoothEdgePath(points) {
     const midY = (p0.y + p1.y) / 2;
     return `M ${p0.x} ${p0.y} C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
   }
+
+  const ROUND_RADIUS = 18;
+  const pointToward = (from, to, maxDist) => {
+    const len = Math.hypot(to.x - from.x, to.y - from.y);
+    if (len === 0) return { x: from.x, y: from.y };
+    const t = Math.min(maxDist, len / 2) / len; // never eat more than half a segment
+    return { x: from.x + (to.x - from.x) * t, y: from.y + (to.y - from.y) * t };
+  };
+
   let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const p0 = points[Math.max(0, i - 1)];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[Math.min(points.length - 1, i + 2)];
-    const cp1x = p1.x + (p2.x - p0.x) / 6, cp1y = p1.y + (p2.y - p0.y) / 6;
-    const cp2x = p2.x - (p3.x - p1.x) / 6, cp2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+  for (let i = 1; i < points.length - 1; i++) {
+    const corner = points[i];
+    const entry = pointToward(corner, points[i - 1], ROUND_RADIUS);
+    const exit = pointToward(corner, points[i + 1], ROUND_RADIUS);
+    d += ` L ${entry.x} ${entry.y} Q ${corner.x} ${corner.y}, ${exit.x} ${exit.y}`;
   }
+  const last = points[points.length - 1];
+  d += ` L ${last.x} ${last.y}`;
   return d;
 }
 
