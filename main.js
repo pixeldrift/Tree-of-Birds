@@ -128,18 +128,21 @@ function initBirdTable() {
     select: false,
     scrollY: $('#list-pane').height() - $('#list-pane h3').outerHeight(true) + 'px',
     scrollCollapse: true,
-    autoWidth: false, // important to prevent misalignment
+    autoWidth: false,
+    // Explicit widths so the header (DataTables clones it into a separate table for
+    // scrollY) and body always divide columns identically, regardless of cell content.
     columns: [
-      { title: "ID" },
-      { title: "Sex" },
-      { title: "Name" },
-      { title: "Mutation" },
-      { title: "Subspecies" },
-      { title: "Species" },
-      { title: "Scientific Name" },
-      { title: "Family" }
+      { title: "ID", width: "6%" },
+      { title: "Sex", width: "6%" },
+      { title: "Name", width: "18%" },
+      { title: "Mutation", width: "12%" },
+      { title: "Subspecies", width: "14%" },
+      { title: "Species", width: "12%" },
+      { title: "Scientific Name", width: "18%" },
+      { title: "Family", width: "14%" }
     ]
   });
+  birdTable.columns.adjust();
 }
 
 // ----- Populate / Refresh Table -----

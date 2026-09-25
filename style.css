@@ -320,7 +320,6 @@ h2 span {
   width: 100% !important;
   border-spacing: 0 6px;
   table-layout: fixed;
-  padding: 0 20px 0 20px;
 }
 
 .dataTables_scrollHeadInner,
@@ -329,16 +328,11 @@ h2 span {
   table-layout: fixed;
 }
 
-#bird-table tbody {
-  display: block;
-  overflow-y: auto;
-  flex: 1;
-}
-
-#bird-table thead, #bird-table tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
+/* DataTables clones the header into its own <table> with no id (for scrollY), so this
+   has to target the shared "dataTable" class rather than #bird-table, or only the body
+   table would get the padding and the header columns would drift out of alignment. */
+.dataTables_wrapper table.dataTable {
+  padding: 0 20px;
 }
 
 #bird-table tbody tr:focus,
@@ -348,12 +342,20 @@ h2 span {
   box-shadow: none !important;
 }
 
-/* Table header styling */
-#bird-table thead th {
+/* Table header styling. DataTables clones the header into its own <table> with no id
+   (see the .dataTables_wrapper table.dataTable rule above), so this has to target it via
+   .dataTables_scrollHead rather than #bird-table thead, or it silently never applies and
+   the header cells fall back to the browser's default padding -- which is what was
+   actually causing the header/body column misalignment, not just the width math. */
+.dataTables_scrollHead th {
   text-align: left;
   padding: 8px 12px;
   background-color: white;
   border-bottom: 4px solid var(--systemGray);
+  box-sizing: border-box;
+}
+#bird-table td {
+  box-sizing: border-box;
 }
 
 /* Cells */
@@ -452,7 +454,7 @@ table.dataTable tbody tr.female.selected > td {
 }
 
 /* Ascending arrow */
-#bird-table th.sorting_asc::after, #bird-table th.sorting_desc::after {
+.dataTables_scrollHead th.sorting_asc::after, .dataTables_scrollHead th.sorting_desc::after {
   color: var(--systemNavy);
 }
 
