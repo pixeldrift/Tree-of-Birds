@@ -567,8 +567,11 @@ table.dataTable tbody tr.female.selected > td {
 .pairing-dot.consang { background: #e03131; width: 14px; height: 14px; margin: -2px; }
 
 svg.edges { position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible; }
-.edge-line { fill: none; stroke: #c0c0c0; stroke-width: 1.5; }
-.edge-line.consang { stroke: #e03131; stroke-width: 2.5; }
+.edge-line {
+  fill: none; stroke: #c0c0c0; stroke-width: 3;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.edge-line.consang { stroke: #e03131; stroke-width: 4; }
 
 #zoomControls {
   position: absolute; bottom: 10px; left: 10px; display: flex; flex-direction: column; gap: 4px;
