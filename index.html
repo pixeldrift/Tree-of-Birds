@@ -54,6 +54,7 @@
 
       <div id="sidebar-tools">
         <button id="coiToolBtn" class="tool-btn">🧬 Coefficient of Inbreeding</button>
+        <button id="mutationToolBtn" class="tool-btn">🎨 Mutation Predictor</button>
       </div>
 
       <div id="coiPanel" class="tool-panel" style="display:none;">
@@ -65,6 +66,17 @@
           </span>
         </div>
         <div id="coiContent"></div>
+      </div>
+
+      <div id="mutationPanel" class="tool-panel" style="display:none;">
+        <div class="tool-panel-header">
+          <strong>Mutation Predictor</strong>
+          <span class="tool-panel-header-actions">
+            <button id="mutationInfoBtn" class="info-btn" title="What does this mean?">ⓘ</button>
+            <button id="mutationCloseBtn" class="close-btn" title="Close">&times;</button>
+          </span>
+        </div>
+        <div id="mutationContent"></div>
       </div>
     </div>
   </div>
@@ -163,6 +175,45 @@
       summing (1/2)ⁿ over every shared ancestor's contribution) — the same value as the
       inbreeding coefficient their offspring would have.</p>
     <p>More info: <a href="https://www.instituteofcaninebiology.org/blog/coi-faqs-understanding-the-coefficient-of-inbreeding" target="_blank" rel="noopener">COI FAQs — Institute of Canine Biology</a></p>
+  </div>
+</div>
+
+<!-- Mutation Predictor info popup -->
+<div id="mutationInfoModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Mutation Predictor</h3>
+    <p>Currently supports <strong>Green-Cheek Conures</strong> only. Four genes control their
+      color mutations — two ordinary recessive genes and two sex-linked recessive genes
+      (birds are ZW, so males carry two copies and can be "split" carriers, while females
+      carry only one copy and always show a sex-linked trait if they have it at all):</p>
+    <table class="sample-table">
+      <thead>
+        <tr><th>Gene</th><th>Inheritance</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Dilute</td><td>Recessive</td></tr>
+        <tr><td>Turquoise</td><td>Recessive</td></tr>
+        <tr><td>Opaline</td><td>Sex-linked recessive</td></tr>
+        <tr><td>Cinnamon</td><td>Sex-linked recessive</td></tr>
+      </tbody>
+    </table>
+    <p>The 16 combinations of these four genes produce the named mutations bred in this
+      variety: Normal, Turquoise, Cinnamon, Turquoise Cinnamon, Yellow-Sided, Turquoise
+      Yellow-Sided, Pineapple, Turquoise Cinnamon Yellow-Sided, Dilute, Mint, Dilute
+      Cinnamon, Cinnamint, Dilute Yellow-Sided, Opamint, Suncheek, and Mooncheek.</p>
+
+    <h4>What this can and can't know</h4>
+    <p>A bird's spreadsheet entry only records what it <em>looks</em> like, not what
+      recessive genes it silently <em>carries</em> ("splits"). This tool automatically
+      detects <strong>proven splits</strong> from your pedigree — e.g. if two
+      normal-looking parents produced a visibly Cinnamon chick, both parents (or just the
+      father, for a sex-linked gene) must carry it. It can't detect a split that has never
+      been proven by an offspring, so predictions are a <strong>floor</strong>: actual
+      results can include additional mutations if a parent turns out to carry an unproven
+      split.</p>
+    <p>Because two of the four genes are sex-linked, exact odds can differ for sons vs.
+      daughters — both are shown alongside the combined odds.</p>
   </div>
 </div>
 

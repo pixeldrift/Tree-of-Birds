@@ -99,6 +99,7 @@ function selectBird(nodeId) {
   populateList();
   drawGraph(selectedBirds, data);
   refreshCoiPanelIfOpen();
+  refreshMutationPanelIfOpen();
 }
 
 // ----- Get Random Bird Images ----- //
@@ -279,6 +280,7 @@ function updateSidebar() {
       populateList();
       drawGraph(selectedBirds, data);
       refreshCoiPanelIfOpen();
+      refreshMutationPanelIfOpen();
     });
 
     // Fill table
@@ -785,6 +787,283 @@ document.getElementById('coiCloseBtn').addEventListener('click', () => {
 });
 document.getElementById('coiInfoBtn').addEventListener('click', () => {
   document.getElementById('coiInfoModal').style.display = 'block';
+});
+
+
+// -------------------- Mutation Predictor (Green-Cheek Conure) -------------------- //
+//
+// Four genes -> 16 named phenotypes, per the original switches prototype in
+// archive/research/Mutation Switches/birdGenetics.html. A bird's spreadsheet entry only
+// records what it looks like, not what it silently carries, so genotypes are reconstructed
+// from: (1) the bird's own visible phenotype, and (2) "proven" splits inferred from its
+// recorded offspring in the pedigree — no new data entry required, at the cost of not being
+// able to detect a split that's never been bred to reveal it (predictions are a floor).
+
+const GREEN_CHEEK_GENES = [
+  { key: 'dilute',    label: 'Dilute',    inheritance: 'autosomal' },
+  { key: 'opaline',   label: 'Opaline',   inheritance: 'sexlinked' },
+  { key: 'cinnamon',  label: 'Cinnamon',  inheritance: 'sexlinked' },
+  { key: 'turquoise', label: 'Turquoise', inheritance: 'autosomal' },
+];
+
+const GREEN_CHEEK_PHENOTYPE_NAMES = {
+  '0000': 'Normal', '0001': 'Turquoise', '0010': 'Cinnamon', '0011': 'Turquoise Cinnamon',
+  '0100': 'Yellow-Sided', '0101': 'Turquoise Yellow-Sided', '0110': 'Pineapple',
+  '0111': 'Turquoise Cinnamon Yellow-Sided', '1000': 'Dilute', '1001': 'Mint',
+  '1010': 'Dilute Cinnamon', '1011': 'Cinnamint', '1100': 'Dilute Yellow-Sided',
+  '1101': 'Opamint', '1110': 'Suncheek', '1111': 'Mooncheek',
+};
+
+// Nicknames some combinations are commonly recorded under, mapped to their gene bit string
+// (dilute, opaline, cinnamon, turquoise) — checked before falling back to substring matching.
+const GREEN_CHEEK_NICKNAME_BITS = {
+  'normal': '0000', 'turquoise': '0001', 'turqoise': '0001', 'turqouise': '0001',
+  'cinnamon': '0010', 'turquoise cinnamon': '0011',
+  'opaline': '0100', 'yellow sided': '0100', 'turquoise yellow sided': '0101',
+  'pineapple': '0110', 'turquoise cinnamon yellow sided': '0111',
+  'dilute': '1000', 'mint': '1001', 'dilute cinnamon': '1010', 'cinnamint': '1011',
+  'dilute yellow sided': '1100', 'dillute yellow sided': '1100',
+  'opamint': '1101', 'suncheek': '1110', 'mooncheek': '1111',
+};
+
+function isGreenCheekConure(bird) {
+  const genus = (bird.scigenus || '').trim().toLowerCase();
+  const sp = (bird.scispecies || '').trim().toLowerCase();
+  if (genus === 'pyrrhura' && sp === 'molinae') return true;
+  const subspecies = (bird.subspecies || '').trim().toLowerCase();
+  const species = (bird.species || '').trim().toLowerCase();
+  return subspecies.includes('green') && species.includes('conure');
+}
+
+// Which of the four genes are visually expressed, parsed from the free-text mutation field.
+function parseVisualGenes(mutationText) {
+  const raw = (mutationText || '').trim().toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ');
+  const bits = GREEN_CHEEK_NICKNAME_BITS[raw];
+  if (bits) {
+    return { dilute: bits[0] === '1', opaline: bits[1] === '1', cinnamon: bits[2] === '1', turquoise: bits[3] === '1' };
+  }
+  return {
+    dilute: /dilut/.test(raw),
+    opaline: /opalin/.test(raw) || /yellow ?sided/.test(raw),
+    cinnamon: /cinnamon/.test(raw),
+    turquoise: /turqu?o?ise/.test(raw),
+  };
+}
+
+// { copies: 0|1|2, tag: 'visual'|'split'|'clear'|'unknown' } — copies is how many recessive
+// alleles this bird is known (or, for 'unknown', assumed) to carry at this gene.
+function greenCheekGeneStatus(bird, gene, allBirds) {
+  if (parseVisualGenes(bird.mutation)[gene.key]) return { copies: 2, tag: 'visual' };
+
+  const sex = (bird.sex || '').trim().toUpperCase();
+  if (gene.inheritance === 'sexlinked' && sex === 'F') {
+    return { copies: 0, tag: 'clear' }; // a hen can't hide a sex-linked recessive — definitive
+  }
+
+  const children = allBirds.filter(c => c.motherID === bird.id || c.fatherID === bird.id);
+  const provenSplit = children.some(c => parseVisualGenes(c.mutation)[gene.key]);
+  if (provenSplit) return { copies: 1, tag: 'split' };
+
+  return { copies: 0, tag: 'unknown' }; // treated as clear for the headline prediction
+}
+
+// P(a hypothetical offspring of this sex is visually recessive at this one gene).
+function offspringGeneVisualProbability(gene, motherCopies, fatherCopies, offspringSex) {
+  const pFather = fatherCopies / 2;
+  if (gene.inheritance === 'sexlinked' && offspringSex === 'daughter') return pFather; // her Z comes only from dad
+  const pMother = motherCopies / 2;
+  return pMother * pFather;
+}
+
+// Full 16-phenotype probability distribution for a hypothetical son or daughter.
+function greenCheekOffspringDistribution(motherStatus, fatherStatus, offspringSex) {
+  const pVisual = GREEN_CHEEK_GENES.map(g =>
+    offspringGeneVisualProbability(g, motherStatus[g.key].copies, fatherStatus[g.key].copies, offspringSex));
+  const rows = [];
+  for (let mask = 0; mask < 16; mask++) {
+    let p = 1, bits = '';
+    GREEN_CHEEK_GENES.forEach((g, i) => {
+      const bit = (mask >> (GREEN_CHEEK_GENES.length - 1 - i)) & 1;
+      bits += bit;
+      p *= bit ? pVisual[i] : (1 - pVisual[i]);
+    });
+    if (p > 1e-9) rows.push({ bits, name: GREEN_CHEEK_PHENOTYPE_NAMES[bits], probability: p });
+  }
+  return rows.sort((a, b) => b.probability - a.probability);
+}
+
+function greenCheekStatusOf(bird, allBirds) {
+  const status = {};
+  GREEN_CHEEK_GENES.forEach(g => { status[g.key] = greenCheekGeneStatus(bird, g, allBirds); });
+  return status;
+}
+
+function combineDistributions(sonDist, daughterDist) {
+  const byBits = new Map();
+  sonDist.forEach(r => byBits.set(r.bits, { bits: r.bits, name: r.name, probability: r.probability * 0.5 }));
+  daughterDist.forEach(r => {
+    const existing = byBits.get(r.bits);
+    if (existing) existing.probability += r.probability * 0.5;
+    else byBits.set(r.bits, { bits: r.bits, name: r.name, probability: r.probability * 0.5 });
+  });
+  return [...byBits.values()].sort((a, b) => b.probability - a.probability);
+}
+
+function geneStatusLabel(tag) {
+  return { visual: 'visual', split: 'split (proven)', clear: 'clear', unknown: 'clear (unproven)' }[tag] || tag;
+}
+
+function renderGeneStatusRow(gene, status) {
+  return `<span class="gene-chip gene-${status.tag}">${gene.label}: ${geneStatusLabel(status.tag)}</span>`;
+}
+
+function renderOutcomeList(rows, limit = 6) {
+  const shown = rows.filter(r => r.probability > 0.001).slice(0, limit);
+  return shown.map(r => `
+    <div class="outcome-row">
+      <span class="outcome-name">${r.name}</span>
+      <span class="outcome-bar"><span style="width:${Math.min(100, r.probability * 100)}%"></span></span>
+      <span class="outcome-pct">${(r.probability * 100).toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+function refreshMutationPanelIfOpen() {
+  if (document.getElementById('mutationPanel').style.display !== 'none') renderMutationPanel();
+}
+
+function renderMutationPanel() {
+  const content = document.getElementById('mutationContent');
+  const byId = Object.fromEntries(data.map(bd => [String(bd.id), bd]));
+  const selected = [...selectedBirds].map(id => byId[id]).filter(Boolean);
+
+  if (selected.length === 0) {
+    content.innerHTML = `<p class="coi-hint">Select one Green-Cheek Conure to search for a mate, or two to predict their offspring.</p>`;
+    return;
+  }
+  if (selected.length > 2) {
+    content.innerHTML = `<p class="coi-hint">Select just one or two birds for this tool (currently ${selected.length} selected).</p>`;
+    return;
+  }
+  if (selected.some(b => !isGreenCheekConure(b))) {
+    content.innerHTML = `<p class="coi-hint">This tool currently only supports Green-Cheek Conures (<em>Pyrrhura molinae</em>).</p>`;
+    return;
+  }
+
+  if (selected.length === 1) {
+    renderMateSearch(content, selected[0], byId);
+    return;
+  }
+
+  const [a, b] = selected;
+  const sexA = (a.sex || '').trim().toUpperCase(), sexB = (b.sex || '').trim().toUpperCase();
+  if (sexA && sexB && sexA === sexB) {
+    content.innerHTML = `<p class="coi-samesex">${a.name} and ${b.name} are both ${sexA === 'F' ? 'female' : 'male'} and cannot be bred together.</p>`;
+    return;
+  }
+
+  const mother = sexA === 'F' ? a : b, father = sexA === 'F' ? b : a;
+  renderPairPrediction(content, mother, father, data);
+}
+
+function renderPairPrediction(content, mother, father, allBirds) {
+  const motherStatus = greenCheekStatusOf(mother, allBirds);
+  const fatherStatus = greenCheekStatusOf(father, allBirds);
+  const sonDist = greenCheekOffspringDistribution(motherStatus, fatherStatus, 'son');
+  const daughterDist = greenCheekOffspringDistribution(motherStatus, fatherStatus, 'daughter');
+  const combined = combineDistributions(sonDist, daughterDist);
+  const anyUnknown = GREEN_CHEEK_GENES.some(g => motherStatus[g.key].tag === 'unknown' || fatherStatus[g.key].tag === 'unknown');
+
+  content.innerHTML = `
+    <div class="coi-pair">${mother.name} <span>&times;</span> ${father.name}</div>
+    <div class="gene-status-block">
+      <div><strong>${mother.name}</strong> (mother): ${GREEN_CHEEK_GENES.map(g => renderGeneStatusRow(g, motherStatus[g.key])).join(' ')}</div>
+      <div><strong>${father.name}</strong> (father): ${GREEN_CHEEK_GENES.map(g => renderGeneStatusRow(g, fatherStatus[g.key])).join(' ')}</div>
+    </div>
+    <h4 class="mutation-section-title">Likely outcomes</h4>
+    <div class="outcome-list">${renderOutcomeList(combined)}</div>
+    <details class="sex-breakdown">
+      <summary>Opaline and Cinnamon are sex-linked — odds differ for sons vs. daughters</summary>
+      <div class="sex-breakdown-cols">
+        <div><h5>As sons</h5>${renderOutcomeList(sonDist, 4)}</div>
+        <div><h5>As daughters</h5>${renderOutcomeList(daughterDist, 4)}</div>
+      </div>
+    </details>
+    ${anyUnknown ? `<p class="coi-hint">Genes marked "clear (unproven)" have never been proven either way by an offspring — actual results could include more than shown here.</p>` : ''}
+  `;
+}
+
+function renderMateSearch(content, bird, byId) {
+  const optionsHtml = Object.entries(GREEN_CHEEK_PHENOTYPE_NAMES)
+    .map(([bits, name]) => `<option value="${bits}">${name}</option>`).join('');
+
+  content.innerHTML = `
+    <div class="coi-pair">Best mate for ${bird.name}</div>
+    <label class="mate-search-label">Desired outcome in the chicks:
+      <select id="mateDesiredOutcome">${optionsHtml}</select>
+    </label>
+    <button id="mateSearchBtn" class="tool-btn" style="margin-top:8px;">Search my collection</button>
+    <div id="mateSearchResults"></div>
+  `;
+
+  document.getElementById('mateSearchBtn').addEventListener('click', () => {
+    const desiredBits = document.getElementById('mateDesiredOutcome').value;
+    const sex = (bird.sex || '').trim().toUpperCase();
+    if (!sex) {
+      document.getElementById('mateSearchResults').innerHTML =
+        `<p class="coi-hint">${bird.name}'s sex isn't recorded, so candidate mates can't be filtered.</p>`;
+      return;
+    }
+    const candidates = data.filter(other => {
+      if (other.id === bird.id || !isGreenCheekConure(other)) return false;
+      const otherSex = (other.sex || '').trim().toUpperCase();
+      return otherSex && otherSex !== sex;
+    });
+
+    const ranked = candidates.map(other => {
+      const mother = sex === 'F' ? bird : other, father = sex === 'F' ? other : bird;
+      const motherStatus = greenCheekStatusOf(mother, data);
+      const fatherStatus = greenCheekStatusOf(father, data);
+      const combined = combineDistributions(
+        greenCheekOffspringDistribution(motherStatus, fatherStatus, 'son'),
+        greenCheekOffspringDistribution(motherStatus, fatherStatus, 'daughter')
+      );
+      const match = combined.find(r => r.bits === desiredBits);
+      return { other, probability: match ? match.probability : 0 };
+    }).filter(r => r.probability > 0.001)
+      .sort((a, b) => b.probability - a.probability)
+      .slice(0, 6);
+
+    const results = document.getElementById('mateSearchResults');
+    if (!ranked.length) {
+      results.innerHTML = `<p class="coi-hint">No bird in your collection has any real chance of producing "${GREEN_CHEEK_PHENOTYPE_NAMES[desiredBits]}" with ${bird.name}.</p>`;
+      return;
+    }
+    results.innerHTML = ranked.map(({ other, probability }) => {
+      const relationship = describeRelationship(bird.id, other.id, byId);
+      return `
+        <div class="mate-result">
+          <div class="outcome-row">
+            <span class="outcome-name">${other.name}</span>
+            <span class="outcome-bar"><span style="width:${Math.min(100, probability * 100)}%"></span></span>
+            <span class="outcome-pct">${(probability * 100).toFixed(1)}%</span>
+          </div>
+          <div class="mate-relationship">${relationship}</div>
+        </div>`;
+    }).join('');
+  });
+}
+
+document.getElementById('mutationToolBtn').addEventListener('click', () => {
+  const panel = document.getElementById('mutationPanel');
+  const opening = panel.style.display === 'none';
+  panel.style.display = opening ? 'block' : 'none';
+  if (opening) renderMutationPanel();
+});
+document.getElementById('mutationCloseBtn').addEventListener('click', () => {
+  document.getElementById('mutationPanel').style.display = 'none';
+});
+document.getElementById('mutationInfoBtn').addEventListener('click', () => {
+  document.getElementById('mutationInfoModal').style.display = 'block';
 });
 
 

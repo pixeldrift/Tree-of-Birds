@@ -704,3 +704,35 @@ svg.edges { position: absolute; top: 0; left: 0; pointer-events: none; overflow:
   margin: 6px 0 0;
 }
 
+/* -------------------- Mutation Predictor -------------------- */
+
+.mutation-section-title { font-size: 13px; margin: 12px 0 6px; color: var(--systemNavy); }
+
+.gene-status-block { font-size: 12px; line-height: 1.9; margin-bottom: 4px; }
+.gene-chip {
+  display: inline-block; padding: 1px 7px; border-radius: 10px; margin: 0 4px 2px 0;
+  border: 1px solid var(--systemGray); background: #f2f2f2;
+}
+.gene-chip.gene-visual  { background: var(--darkPink); border-color: var(--darkPink); color: white; }
+.gene-chip.gene-split   { background: #fef8e5; border-color: #d8b400; color: #8a6d00; }
+.gene-chip.gene-clear   { background: #eaf9ef; border-color: #1e7b34; color: #1e7b34; }
+.gene-chip.gene-unknown { background: #f2f2f2; border-color: var(--systemGray); color: #666; }
+
+.outcome-list { display: flex; flex-direction: column; gap: 4px; }
+.outcome-row { display: grid; grid-template-columns: 1fr 80px 44px; align-items: center; gap: 6px; font-size: 12px; }
+.outcome-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.outcome-bar { background: #eee; border-radius: 4px; height: 8px; overflow: hidden; }
+.outcome-bar span { display: block; height: 100%; background: var(--darkBlue); }
+.outcome-pct { text-align: right; font-variant-numeric: tabular-nums; }
+
+.sex-breakdown { margin-top: 10px; font-size: 12px; }
+.sex-breakdown summary { cursor: pointer; color: var(--systemNavy); }
+.sex-breakdown-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+.sex-breakdown-cols h5 { margin: 0 0 4px; font-size: 12px; }
+
+.mate-search-label { display: block; font-size: 13px; margin-top: 4px; }
+.mate-search-label select { display: block; width: 100%; margin-top: 4px; padding: 4px; }
+
+.mate-result { border-bottom: 1px dotted var(--systemGray); padding: 6px 0; }
+.mate-relationship { font-size: 11px; color: #666; margin-top: 2px; }
+

@@ -19,14 +19,14 @@ the header to load your own CSV/TSV.
 - **Select**: click a bird in the graph, or in the Bird List at the bottom
 - **Pan**: click and drag the graph background
 - **Zoom**: scroll wheel, or the `+` / `−` / fit buttons in the bottom-left of the graph
-- **Parents / Siblings / Offspring / Consanguinity** checkboxes (bottom-right of the graph)
+- **Parents / Siblings / Offspring / Related** checkboxes (bottom-right of the graph)
   control how much of the tree is shown around your current selection, and whether
   consanguineous pairings (the two birds share a common ancestor) are highlighted in red
 - The **Bird Info** sidebar on the right lists a card per selected bird, with its
   mother/father/offspring as clickable links that add them to the selection too
-- With exactly two birds selected, the **Coefficient of Inbreeding** button at the bottom
-  of the sidebar reports how they're related and whether they're safe to breed together
-  (see below)
+- Two tools live at the bottom of the sidebar, both keyed off your current selection:
+  **Coefficient of Inbreeding** (select two birds) and **Mutation Predictor** (select one
+  or two Green-Cheek Conures) — see below
 
 ## Data format
 
@@ -124,3 +124,28 @@ bred. Rather than the path-counting method above, the app computes this with the
 equivalent (and more robust with real-world pedigrees) recursive kinship-coefficient
 method, which handles arbitrarily tangled inbreeding loops without needing to enumerate
 pedigree paths by hand.
+
+## Mutation Predictor
+
+Currently scoped to **Green-Cheek Conures** (*Pyrrhura molinae*) — four genes (Dilute and
+Turquoise, both ordinary recessive; Opaline and Cinnamon, both sex-linked recessive)
+combine into 16 named mutations. This started from a standalone gene-switches prototype
+(`archive/research/Mutation Switches/birdGenetics.html`) that mapped a single bird's own
+genes to its phenotype name; the sidebar tool extends that into a breeding predictor:
+
+- **Select two Green-Cheek Conures** of opposite sex for a full offspring report: each
+  parent's known genotype per gene, the likely outcomes with probabilities, and a
+  sex-specific breakdown (Opaline/Cinnamon odds genuinely differ for sons vs. daughters,
+  since birds are ZW — a hen can't hide a sex-linked recessive, but a cock can carry one
+  invisibly).
+- **Select just one** to search your whole collection instead: pick a desired outcome and
+  it ranks every opposite-sex Green-Cheek Conure by their probability of producing it,
+  alongside how the two birds are related (reusing the COI tool's relationship logic).
+
+The catch: a spreadsheet entry only records what a bird *looks like*, not what recessive
+genes it silently *carries*. The predictor automatically detects **proven splits** from
+your pedigree — if two normal-looking parents produced a visibly Cinnamon chick, whichever
+parent(s) could have hidden it must carry it — with zero extra data entry required. It
+can't detect a split that's never been proven by an offspring, so treat the odds shown as
+a **floor**: real results can include more than predicted if a parent turns out to carry
+an unproven split.
