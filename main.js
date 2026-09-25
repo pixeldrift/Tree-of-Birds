@@ -368,7 +368,7 @@ function smoothEdgePath(points) {
     return `M ${p0.x} ${p0.y} C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
   }
 
-  const ROUND_RADIUS = 18;
+  const ROUND_RADIUS = 30;
   const pointToward = (from, to, maxDist) => {
     const len = Math.hypot(to.x - from.x, to.y - from.y);
     if (len === 0) return { x: from.x, y: from.y };
