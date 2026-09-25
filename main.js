@@ -354,15 +354,27 @@ function updateIntro() {
 const pairKey = (m, f) => `${m || ''}:${f || ''}`;
 const normalizedKey = bird => pairKey(bird.motherID, bird.fatherID);
 
-// Smooth cubic-bezier path through Dagre's edge points, curving vertically between each
-// pair (control points pulled to the midpoint height) instead of straight line segments.
+// A single continuously-smooth curve through Dagre's edge points — no straight run
+// suddenly kinking into a curve at a waypoint (which is what a fresh vertical-tangent
+// bezier at each segment produces). Two points still get a full vertical-tangent S-curve;
+// three or more are fit with a Catmull-Rom-to-bezier spline so the whole line flows as one
+// arc, like maxing out the corner-radius/smooth-points tool in a vector editor.
 function smoothEdgePath(points) {
   if (!points.length) return '';
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 1; i < points.length; i++) {
-    const p0 = points[i - 1], p1 = points[i];
+  if (points.length === 2) {
+    const [p0, p1] = points;
     const midY = (p0.y + p1.y) / 2;
-    d += ` C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
+    return `M ${p0.x} ${p0.y} C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
+  }
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(0, i - 1)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(points.length - 1, i + 2)];
+    const cp1x = p1.x + (p2.x - p0.x) / 6, cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6, cp2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
   }
   return d;
 }
