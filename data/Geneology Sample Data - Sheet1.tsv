@@ -28,14 +28,14 @@ id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	sc
 027	Walder Frey	M				Sun	Conure	Aratinga	solstitialis	Psittacidae
 028	Roslin Tully (Frey)	F	027			Timneh	African Grey	Psittacus	timneh	Psittacidae
 029	Jon Arryn	M	102	103		Major Mitchell's	Cockatoo	Lophochroa	leadbeateri	Cacatuidae
-030	Robyn Arryn	M	029	025		Cinnamon	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+030	Robyn Arryn	M	029	025	Cinnamon		Cockatiel	Nymphicus	hollandicus	Cacatuidae
 031	Balon Greyjoy	M	040	041		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
 032	Euron Greyjoy	M	040	041		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 033	Yara Greyjoy	F	031	039		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 034	Theon Greyjoy	M	031	039		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
 035	Walda Frey	F	027	038		Pionus	Parrot	Pionus	spp.	Psittacidae
 036	Roose Bolton	M				Double Yellowheaded	Amazon	Amazona	oratrix	Psittacidae
-037	Unnamed	U	036	035		Normal	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+037	Unnamed	U	036	035	Normal		Cockatiel	Nymphicus	hollandicus	Cacatuidae
 038	Unnamed	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
 039	Alannys Greyjoy (Harlaw)	F				Nanday	Conure	Nandayus	nenday	Psittacidae
 040	Unnamed Greyjoy	M				Hyacinth	Macaw	Anodorhynchus	hyacinthinus	Psittacidae
@@ -64,7 +64,7 @@ id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	sc
 063	Tyene Sand	F	047	060		Double Yellowheaded	Amazon	Amazona	oratrix	Psittacidae
 064	Selyse Baratheon (Florent)	F			Opaline	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 065	Stannis Baratheon	M	068	069		Crimson Bellied	Conure	Pyrrhura	perlata	Psittacidae
-066	Shireen Baratheon	F	065	064		Pied	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+066	Shireen Baratheon	F	065	064	Pied		Cockatiel	Nymphicus	hollandicus	Cacatuidae
 067	Robert Baratheon	M	068	069		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
 068	Unnamed Baratheon	M				Nanday	Conure	Nandayus	nenday	Psittacidae
 069	Unnamed Baratheon	F			Opaline Dilute	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
@@ -77,7 +77,7 @@ id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	sc
 076	Cersei Lannister	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
 077	Jaime Lannister	M				Timneh	African Grey	Psittacus	timneh	Psittacidae
 078	Tyrion Lannister	M				Sun	Conure	Aratinga	solstitialis	Psittacidae
-079	Gendry	M	067			Cinnamon	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+079	Gendry	M	067		Cinnamon		Cockatiel	Nymphicus	hollandicus	Cacatuidae
 080	Joffrey Baratheon	M	077	076		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 081	Myrcella Baratheon	F	077	076		Blue Crowned	Conure	Aratinga	acuticaudata	Psittacidae
 082	Tommen Baratheon	M	077	076		Moluccan	Cockatoo	Cacatua	moluccensis	Cacatuidae
@@ -92,7 +92,7 @@ id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	sc
 091	Aegon V Targaryen	M	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 092	Betha Blackwood	F				Jenday	Conure	Aratinga	jandaya	Psittacidae
 093	Duncan Targaryen	M	091	092		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
-094	Shaera Targaryen	F	091	092		Normal	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+094	Shaera Targaryen	F	091	092	Normal		Cockatiel	Nymphicus	hollandicus	Cacatuidae
 095	Jaehaerys Targaryen	M	091	092		Double Yellowheaded	Amazon	Amazona	oratrix	Psittacidae
 096	Daeron Targaryen	M	091	092		Sun	Conure	Aratinga	solstitialis	Psittacidae
 097	Rhaelle Targaryen	M	091	092		Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
@@ -120,7 +120,7 @@ id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	sc
 119	Jorah Mormont	M	113			Greenwinged	Macaw	Ara	chloropterus	Psittacidae
 120	Missandei					Bare Eyed	Cockatoo	Cacatua	sanguinea	Cacatuidae
 121	Grey Worm					Sulfer Crested	Cockatoo	Cacatua	galerita	Cacatuidae
-122	Melisandre					Cinnamon	Cockatiel	Nymphicus	hollandicus	Cacatuidae
+122	Melisandre				Cinnamon		Cockatiel	Nymphicus	hollandicus	Cacatuidae
 123	Gregor Clegane	M	125	126		Sun	Conure	Aratinga	solstitialis	Psittacidae
 124	Sandor Clegane	M	125	126		Jenday	Conure	Aratinga	jandaya	Psittacidae
 125	Unnamed Clegane	M				Nanday	Conure	Nandayus	nenday	Psittacidae

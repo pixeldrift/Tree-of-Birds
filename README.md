@@ -127,9 +127,8 @@ pedigree paths by hand.
 
 ## Mutation Predictor
 
-One Mendelian engine shared across five species, each with its own gene profile: **Green-
-Cheek Conure**, **Cockatiel**, **Indian Ringneck Parakeet**, **Peach-Faced Lovebird**, and
-**Gouldian Finch**. This started from a standalone gene-switches prototype
+One Mendelian engine shared across several species, each with its own gene profile. This
+started from a standalone gene-switches prototype
 (`archive/research/Mutation Switches/birdGenetics.html`) that mapped a single Green-Cheek
 Conure's own genes to its phenotype name; the sidebar tool extends that into a breeding
 predictor and generalizes it to more species and more kinds of inheritance:
@@ -146,7 +145,33 @@ predictor and generalizes it to more species and more kinds of inheritance:
   a cock carries two and can be a "split" — odds genuinely differ for sons vs. daughters,
   shown separately alongside the combined odds.
 
-Usage:
+### Supported species
+
+- Green-Cheek Conure (*Pyrrhura molinae*)
+- Cockatiel (*Nymphicus hollandicus*)
+- Indian Ringneck Parakeet (*Psittacula krameri*)
+- Peach-Faced Lovebird (*Agapornis roseicollis*)
+- Gouldian Finch (*Chloebia gouldiae*)
+
+### Future support
+
+[Gencalc](https://www.gencalc.com) publishes formulas for a much longer list of species.
+The ones below aren't built yet, but a species just needs a gene profile (its gene list,
+inheritance types, and phenotype names) added to `SPECIES_PROFILES` in `main.js` to join
+the list above — the Mendelian engine, split-inference, and UI are already generic across
+every inheritance type in use so far.
+
+Budgerigar, Lineolated Parrot, Red-rumped Parrot, Quaker Parrot, Rainbow Lorikeet, King
+Parrot, Crimson-winged Parrot, Galah, Bourke's Parrot, Scarlet-chested Parrot, Turquoise
+Parrot, Elegant Parrot, Blue-winged Parrot, Rock Parrot, Abyssinian Lovebird, White
+eye-ring group Lovebirds, Pacific Parrotlet, Blue-winged Parrotlet, Green-rumped Parrotlet,
+Spectacled Parrotlet, Eastern Rosella, Crimson Rosella, Adelaide Rosella, Pale-headed
+Rosella, Yellow Rosella, Western Rosella, Alexandrine Parrot, Plum-headed Parrot,
+Moustache Parrot, Slaty-headed Parrot, Princess Parrot, Superb Parrot, Regent Parrot,
+Mallee Ringnecked Parrot, Port Lincoln Parrot, Red-fronted Kakariki, Yellow-fronted
+Kakariki, Sulphur-crested Cockatoo, Blue and Gold Macaw.
+
+### Usage
 
 - **Select two birds of the same species**, opposite sex, for a full offspring report: each
   parent's known genotype per gene, and the likely outcomes with probabilities.

@@ -809,8 +809,9 @@ function normalizeMutationText(text) {
   return (text || '').trim().toLowerCase().replace(/-/g, ' ').replace(/\s+/g, ' ');
 }
 
-// Some sample rows (e.g. this app's Cockatiel data) record the mutation name under
-// "subspecies" instead of "mutation" -- search both rather than assume one column.
+// Some real-world spreadsheets record the mutation name under "subspecies" instead of
+// "mutation" (this app's own Cockatiel sample rows used to, until it was cleaned up) --
+// search both rather than assume one column holds it.
 function mutationSourceText(bird) {
   return normalizeMutationText(`${bird.mutation || ''} ${bird.subspecies || ''}`);
 }
