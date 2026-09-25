@@ -183,37 +183,41 @@
   <div class="modal-content">
     <span class="close-modal">&times;</span>
     <h3>Mutation Predictor</h3>
-    <p>Currently supports <strong>Green-Cheek Conures</strong> only. Four genes control their
-      color mutations — two ordinary recessive genes and two sex-linked recessive genes
-      (birds are ZW, so males carry two copies and can be "split" carriers, while females
-      carry only one copy and always show a sex-linked trait if they have it at all):</p>
+    <p>Currently supports five species, each with its own set of genes: <strong>Green-Cheek
+      Conure</strong>, <strong>Cockatiel</strong>, <strong>Indian Ringneck Parakeet</strong>,
+      <strong>Peach-Faced Lovebird</strong>, and <strong>Gouldian Finch</strong>. Both
+      selected birds must be the same species.</p>
+
+    <h4>Kinds of genes involved</h4>
     <table class="sample-table">
       <thead>
-        <tr><th>Gene</th><th>Inheritance</th></tr>
+        <tr><th>Inheritance</th><th>What it means</th></tr>
       </thead>
       <tbody>
-        <tr><td>Dilute</td><td>Recessive</td></tr>
-        <tr><td>Turquoise</td><td>Recessive</td></tr>
-        <tr><td>Opaline</td><td>Sex-linked recessive</td></tr>
-        <tr><td>Cinnamon</td><td>Sex-linked recessive</td></tr>
+        <tr><td>Recessive</td><td>Needs two copies to show; one copy is an invisible "split"</td></tr>
+        <tr><td>Dominant</td><td>Shows with just one copy; a second copy usually looks the same</td></tr>
+        <tr><td>Incomplete dominant</td><td>Looks different at 0, 1, and 2 copies — e.g. a
+          lovebird's Dark Factor (Normal / Olive / Jade) or a cockatiel's Silver (Normal /
+          Single Factor / Double Factor)</td></tr>
+        <tr><td>Sex-linked recessive</td><td>Birds are ZW, so males carry two copies and can
+          be "split," while females carry only one and always show it if they have it —
+          odds genuinely differ for sons vs. daughters, shown separately alongside the
+          combined odds</td></tr>
       </tbody>
     </table>
-    <p>The 16 combinations of these four genes produce the named mutations bred in this
-      variety: Normal, Turquoise, Cinnamon, Turquoise Cinnamon, Yellow-Sided, Turquoise
-      Yellow-Sided, Pineapple, Turquoise Cinnamon Yellow-Sided, Dilute, Mint, Dilute
-      Cinnamon, Cinnamint, Dilute Yellow-Sided, Opamint, Suncheek, and Mooncheek.</p>
 
     <h4>What this can and can't know</h4>
     <p>A bird's spreadsheet entry only records what it <em>looks</em> like, not what
       recessive genes it silently <em>carries</em> ("splits"). This tool automatically
       detects <strong>proven splits</strong> from your pedigree — e.g. if two
-      normal-looking parents produced a visibly Cinnamon chick, both parents (or just the
-      father, for a sex-linked gene) must carry it. It can't detect a split that has never
-      been proven by an offspring, so predictions are a <strong>floor</strong>: actual
-      results can include additional mutations if a parent turns out to carry an unproven
-      split.</p>
-    <p>Because two of the four genes are sex-linked, exact odds can differ for sons vs.
-      daughters — both are shown alongside the combined odds.</p>
+      normal-looking parents produced a visibly mutated chick, whichever parent(s) could
+      have hidden it must carry it. It can't detect a split that has never been proven by
+      an offspring, so predictions are a <strong>floor</strong>: actual results can include
+      more than shown if a parent turns out to carry an unproven split. For a bird showing a
+      simple dominant trait (not incomplete dominant), whether it carries one or two copies
+      is assumed to be one (the more conservative guess) unless proven otherwise.</p>
+    <p>Each species profile covers a solid, well-established core gene set for that
+      species — not necessarily every mutation that exists for it.</p>
   </div>
 </div>
 

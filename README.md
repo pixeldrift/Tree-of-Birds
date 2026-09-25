@@ -127,25 +127,38 @@ pedigree paths by hand.
 
 ## Mutation Predictor
 
-Currently scoped to **Green-Cheek Conures** (*Pyrrhura molinae*) — four genes (Dilute and
-Turquoise, both ordinary recessive; Opaline and Cinnamon, both sex-linked recessive)
-combine into 16 named mutations. This started from a standalone gene-switches prototype
-(`archive/research/Mutation Switches/birdGenetics.html`) that mapped a single bird's own
-genes to its phenotype name; the sidebar tool extends that into a breeding predictor:
+One Mendelian engine shared across five species, each with its own gene profile: **Green-
+Cheek Conure**, **Cockatiel**, **Indian Ringneck Parakeet**, **Peach-Faced Lovebird**, and
+**Gouldian Finch**. This started from a standalone gene-switches prototype
+(`archive/research/Mutation Switches/birdGenetics.html`) that mapped a single Green-Cheek
+Conure's own genes to its phenotype name; the sidebar tool extends that into a breeding
+predictor and generalizes it to more species and more kinds of inheritance:
 
-- **Select two Green-Cheek Conures** of opposite sex for a full offspring report: each
-  parent's known genotype per gene, the likely outcomes with probabilities, and a
-  sex-specific breakdown (Opaline/Cinnamon odds genuinely differ for sons vs. daughters,
-  since birds are ZW — a hen can't hide a sex-linked recessive, but a cock can carry one
-  invisibly).
+- **Recessive** (e.g. Green-Cheek Dilute, Cockatiel Pied) — needs two copies to show; one
+  copy is an invisible "split."
+- **Dominant** (e.g. Indian Ringneck Grey) — shows with just one copy; a second copy is
+  assumed (not provable from a single generation) to look the same.
+- **Incomplete dominant** (e.g. Lovebird Dark Factor: Normal/Olive/Jade, or Cobalt/Mauve
+  jointly with the Blue gene; Cockatiel Silver: Single/Double Factor) — looks different at
+  0, 1, and 2 copies, so unlike the other types there's never a hidden state to infer.
+- **Sex-linked recessive** (e.g. Cinnamon, Lutino, Pearl, Opaline, or a Gouldian's
+  Red-Headed gene) — birds are ZW, so a hen carries (and always shows) only one copy while
+  a cock carries two and can be a "split" — odds genuinely differ for sons vs. daughters,
+  shown separately alongside the combined odds.
+
+Usage:
+
+- **Select two birds of the same species**, opposite sex, for a full offspring report: each
+  parent's known genotype per gene, and the likely outcomes with probabilities.
 - **Select just one** to search your whole collection instead: pick a desired outcome and
-  it ranks every opposite-sex Green-Cheek Conure by their probability of producing it,
-  alongside how the two birds are related (reusing the COI tool's relationship logic).
+  it ranks every opposite-sex bird of that same species by their probability of producing
+  it, alongside how the two birds are related (reusing the COI tool's relationship logic).
 
 The catch: a spreadsheet entry only records what a bird *looks like*, not what recessive
 genes it silently *carries*. The predictor automatically detects **proven splits** from
-your pedigree — if two normal-looking parents produced a visibly Cinnamon chick, whichever
+your pedigree — if two normal-looking parents produced a visibly mutated chick, whichever
 parent(s) could have hidden it must carry it — with zero extra data entry required. It
 can't detect a split that's never been proven by an offspring, so treat the odds shown as
 a **floor**: real results can include more than predicted if a parent turns out to carry
-an unproven split.
+an unproven split. Each species profile covers a solid, well-established core gene set —
+not necessarily every mutation that exists for it.
