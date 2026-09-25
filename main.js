@@ -858,9 +858,27 @@ function geneVisualLabel(gene, copies) {
   return copies === 2 ? gene.label : null; // recessive or sexlinked-recessive
 }
 
-// { copies, tag } for one bird at one gene. tag is 'visual' | 'split' | 'clear' | 'unknown'
-// -- 'unknown' is treated as clear (copies: 0) for the headline prediction, flagged in the
-// UI since it's an assumption, not a fact proven by the pedigree.
+// Splits an owner-supplied "splits" column into this species' matching gene keys. Lets you
+// record what a previous owner told you about a bird's known carrier status -- e.g. proven
+// through pairings you don't have the pedigree for -- even when the pedigree we do have
+// can't prove it. Free text, comma/slash/semicolon-separated, matched against each gene's
+// label (e.g. "Cinnamon, Pied" or "Cinnamon / Pied").
+function parseDeclaredSplits(bird, profile) {
+  const raw = (bird.splits || '').toLowerCase();
+  const declared = new Set();
+  if (!raw.trim()) return declared;
+  const tokens = raw.split(/[,/;]+/).map(t => t.trim()).filter(Boolean);
+  profile.genes.forEach(g => {
+    const label = g.label.toLowerCase();
+    if (tokens.some(t => t === label || t.includes(label))) declared.add(g.key);
+  });
+  return declared;
+}
+
+// { copies, tag } for one bird at one gene. tag is 'visual' | 'split' | 'split-declared' |
+// 'clear' | 'unknown' -- 'unknown' is treated as clear (copies: 0) for the headline
+// prediction, flagged in the UI since it's an assumption, not a fact proven by the pedigree
+// or declared by the owner.
 function geneStatus(bird, gene, profile, allBirds) {
   const ownCopies = profile.parseVisualStates(mutationSourceText(bird))[gene.key] || 0;
 
@@ -877,6 +895,9 @@ function geneStatus(bird, gene, profile, allBirds) {
   const sex = (bird.sex || '').trim().toUpperCase();
   if (gene.inheritance === 'sexlinked' && sex === 'F') {
     return { copies: 0, tag: 'clear' }; // a hen can't hide a sex-linked recessive
+  }
+  if (parseDeclaredSplits(bird, profile).has(gene.key)) {
+    return { copies: 1, tag: 'split-declared' };
   }
   const children = allBirds.filter(c => c.motherID === bird.id || c.fatherID === bird.id);
   const provenSplit = children.some(c => (profile.parseVisualStates(mutationSourceText(c))[gene.key] || 0) === 2);
@@ -1127,7 +1148,10 @@ function matchSpeciesProfile(bird) {
 }
 
 function geneStatusLabel(tag) {
-  return { visual: 'visual', split: 'split (proven)', clear: 'clear', unknown: 'clear (unproven)' }[tag] || tag;
+  return {
+    visual: 'visual', split: 'split (proven)', 'split-declared': 'split (declared)',
+    clear: 'clear', unknown: 'clear (unproven)',
+  }[tag] || tag;
 }
 
 function renderGeneStatusRow(gene, status) {

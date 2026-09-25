@@ -123,6 +123,11 @@
       <li>ID numbers must be unique, may be zero padded.</li>
       <li>Sex should be <code>M</code> or <code>F</code>.</li>
       <li>Parents (motherID, fatherID) refer to other IDs in the same file.</li>
+      <li>An optional <code>splits</code> column lets the Mutation Predictor know about a
+        bird's non-visual carrier genes when you know them from the previous owner or other
+        proven pairings not reflected in this pedigree — a comma-separated list of gene
+        names, e.g. <code>Cinnamon, Pied</code>. Otherwise it can only infer splits proven
+        by an offspring actually recorded in this file.</li>
     </ul>
 
     <h4>Example:</h4>
@@ -212,10 +217,17 @@
       detects <strong>proven splits</strong> from your pedigree — e.g. if two
       normal-looking parents produced a visibly mutated chick, whichever parent(s) could
       have hidden it must carry it. It can't detect a split that has never been proven by
-      an offspring, so predictions are a <strong>floor</strong>: actual results can include
-      more than shown if a parent turns out to carry an unproven split. For a bird showing a
-      simple dominant trait (not incomplete dominant), whether it carries one or two copies
-      is assumed to be one (the more conservative guess) unless proven otherwise.</p>
+      an offspring actually recorded in your file, so predictions are a
+      <strong>floor</strong>: actual results can include more than shown if a parent turns
+      out to carry an unproven split. For a bird showing a simple dominant trait (not
+      incomplete dominant), whether it carries one or two copies is assumed to be one (the
+      more conservative guess) unless proven otherwise.</p>
+    <p>If you know more than the pedigree can prove — e.g. a previous owner told you a
+      bird's splits based on pairings you don't have the records for — add an optional
+      <strong><code>splits</code></strong> column to your data (comma-separated gene names,
+      like <code>Cinnamon, Pied</code>). Declared splits show up tagged "split (declared)"
+      to distinguish them from ones this tool proved itself, and feed into the odds exactly
+      the same way.</p>
     <p>Each species profile covers a solid, well-established core gene set for that
       species — not necessarily every mutation that exists for it.</p>
   </div>

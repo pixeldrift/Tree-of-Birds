@@ -1,4 +1,4 @@
-id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	scifamily
+id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	scifamily	splits
 001	Rickard Stark	M				Congo	African Grey	Psittacus	erithacus	Psittacidae
 002	Lyarra Stark	F			Normal	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 003	Catelyn Stark (Tully)	F	023	024		Sulfer Crested	Cockatoo	Cacatua	galerita	Cacatuidae
@@ -85,7 +85,7 @@ id	name	sex	fatherID	motherID	mutation	subspecies	species	scigenus	scispecies	sc
 084	Aemon Targaryen	M	085	086		Blue Throated	Macaw	Ara	glaucogularis	Psittacidae
 085	Maekar I Targaryen	M				Black Palm	Cockatoo	Probosciger	aterrimus	Cacatuidae
 086	Dyanna Dayne	F				Indian Ringnecked	Parakeet	Psittacula	krameri	Psittacidae
-087	Daeron Targaryen	M	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
+087	Daeron Targaryen	M	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae	Cinnamon, Turquoise
 088	Aerion Targaryen	M	085	086	Yellow	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 089	Daella Targaryen	F	085	086		Greencheeked	Conure	Pyrrhura	molinae	Psittacidae
 090	Rehea Targaryen	F	085	086	Green	Greencheeked	Conure	Pyrrhura	molinae	Psittacidae

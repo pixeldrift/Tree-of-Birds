@@ -26,7 +26,7 @@ the header to load your own CSV/TSV.
   mother/father/offspring as clickable links that add them to the selection too
 - Two tools live at the bottom of the sidebar, both keyed off your current selection:
   **Coefficient of Inbreeding** (select two birds) and **Mutation Predictor** (select one
-  or two Green-Cheek Conures) — see below
+  or two birds of a supported species) — see below
 
 ## Data format
 
@@ -41,6 +41,7 @@ Load a `.csv` or `.tsv` file with these columns (see
 | `motherID` |          | Another bird's `id`                     |
 | `fatherID` |          | Another bird's `id`                     |
 | `mutation`, `subspecies`, `species`, `scigenus`, `scispecies`, `scifamily` | | shown as extra detail |
+| `splits`   |          | Comma-separated gene names this bird is known to carry but not show — e.g. `Cinnamon, Pied`. For when you know more than the pedigree in this file can prove (see [Mutation Predictor](#mutation-predictor)) |
 
 ## Project structure
 
@@ -183,7 +184,15 @@ The catch: a spreadsheet entry only records what a bird *looks like*, not what r
 genes it silently *carries*. The predictor automatically detects **proven splits** from
 your pedigree — if two normal-looking parents produced a visibly mutated chick, whichever
 parent(s) could have hidden it must carry it — with zero extra data entry required. It
-can't detect a split that's never been proven by an offspring, so treat the odds shown as
-a **floor**: real results can include more than predicted if a parent turns out to carry
-an unproven split. Each species profile covers a solid, well-established core gene set —
-not necessarily every mutation that exists for it.
+can't detect a split that's never been proven by an offspring actually recorded in your
+file, so treat the odds shown as a **floor**: real results can include more than predicted
+if a parent turns out to carry an unproven split.
+
+If you know more than your pedigree can prove — e.g. a previous owner told you a bird's
+splits based on pairings you don't have the records for — add it via the optional
+`splits` column (see [Data format](#data-format)) rather than losing that information.
+Declared splits are tagged "split (declared)" in the tool's output, distinct from ones
+proven from the pedigree itself, but feed into the odds exactly the same way.
+
+Each species profile covers a solid, well-established core gene set — not necessarily
+every mutation that exists for it.
