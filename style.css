@@ -583,6 +583,69 @@ svg.edges { position: absolute; top: 0; left: 0; pointer-events: none; overflow:
   font-size: 16px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.2);
 }
 
+/* -------------------- Sidebar view toggle (full cards vs. compact chips) -------------------- */
+
+.view-toggle {
+  display: flex;
+  gap: 4px;
+}
+.view-toggle-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--systemGray);
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.view-toggle-btn.active {
+  background: var(--systemNavy);
+  border-color: var(--systemNavy);
+  color: white;
+}
+
+/* -------------------- Compact bird chips -------------------- */
+
+.info-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-content: flex-start;
+}
+
+.info-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 2px solid var(--systemGray);
+  border-radius: 999px;
+  background: white;
+  padding: 4px 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: black;
+}
+.info-chip.female { background: var(--lightPink); border-color: var(--darkPink); }
+.info-chip.male { background: var(--lightBlue); border-color: var(--darkBlue); }
+
+.info-chip .chip-id {
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+.info-chip .close-btn {
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 2px;
+  opacity: 0.55;
+}
+.info-chip .close-btn:hover {
+  opacity: 1;
+}
+
 /* -------------------- Sidebar tools (Coefficient of Inbreeding, etc.) -------------------- */
 
 #sidebar-tools {

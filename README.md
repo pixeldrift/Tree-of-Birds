@@ -23,7 +23,10 @@ the header to load your own CSV/TSV.
   control how much of the tree is shown around your current selection, and whether
   consanguineous pairings (the two birds share a common ancestor) are highlighted in red
 - The **Bird Info** sidebar on the right lists a card per selected bird, with its
-  mother/father/offspring as clickable links that add them to the selection too
+  mother/father/offspring as clickable links that add them to the selection too. The two
+  buttons in its header switch between that full card view and a compact chip view
+  (name, sex, ID only) so more of your selection stays visible at once — handy when a
+  tool panel below is also taking up sidebar space
 - Two tools live at the bottom of the sidebar, both keyed off your current selection:
   **Coefficient of Inbreeding** (select two birds) and **Mutation Predictor** (select one
   or two birds of a supported species) — see below

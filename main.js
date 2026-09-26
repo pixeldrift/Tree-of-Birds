@@ -241,6 +241,24 @@ window.addEventListener('mouseup', () => {
 
 // ----- Info Sidebar ----- //
 
+// 'full' shows the whole info-card (image, pedigree links, etc); 'compact' shows a small
+// pill per bird so more of the selection stays visible at once, especially with a tool
+// panel (COI / Mutation Predictor) also open below in the same sidebar column.
+let sidebarViewMode = 'full';
+
+const viewModeCardsBtn = document.getElementById('viewModeCardsBtn');
+const viewModeChipsBtn = document.getElementById('viewModeChipsBtn');
+
+function setSidebarViewMode(mode) {
+  sidebarViewMode = mode;
+  viewModeCardsBtn.classList.toggle('active', mode === 'full');
+  viewModeChipsBtn.classList.toggle('active', mode === 'compact');
+  updateSidebar();
+}
+
+viewModeCardsBtn.addEventListener('click', () => setSidebarViewMode('full'));
+viewModeChipsBtn.addEventListener('click', () => setSidebarViewMode('compact'));
+
 function updateSidebar() {
   infoDiv.innerHTML = '';
 
@@ -249,6 +267,55 @@ function updateSidebar() {
     return;
   }
 
+  if (sidebarViewMode === 'compact') {
+    renderCompactSidebar();
+  } else {
+    renderFullSidebar();
+  }
+}
+
+function removeFromSelection(id) {
+  selectedBirds.delete(id);
+  updateSidebar();
+  populateList();
+  drawGraph(selectedBirds, data);
+  refreshCoiPanelIfOpen();
+  refreshMutationPanelIfOpen();
+}
+
+function renderCompactSidebar() {
+  const template = document.getElementById('info-chip-template');
+  const grid = document.createElement('div');
+  grid.className = 'info-chip-grid';
+
+  selectedBirds.forEach(id => {
+    const bird = data.find(b => b.id === id);
+    if (!bird) return;
+
+    const clone = template.content.cloneNode(true);
+    const chip = clone.querySelector('.info-chip');
+    const gender = (bird.sex || '').trim().toUpperCase();
+
+    chip.classList.add(gender === 'F' ? 'female' : 'male');
+    chip.querySelector('.chip-sex').textContent = gender === 'F' ? '♀' : '♂';
+    chip.querySelector('.chip-name').textContent = bird.name;
+    chip.querySelector('.chip-id').textContent = `#${bird.id}`;
+
+    const details = [bird.mutation, bird.subspecies, bird.species].filter(Boolean).join(' · ');
+    if (details) chip.title = details;
+
+    chip.querySelector('.close-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      removeFromSelection(bird.id);
+    });
+
+    grid.appendChild(clone);
+  });
+
+  infoDiv.appendChild(grid);
+}
+
+function renderFullSidebar() {
   const template = document.getElementById('info-card-template');
 
   selectedBirds.forEach(id => {
@@ -277,14 +344,7 @@ function updateSidebar() {
     card.querySelector('.bird-name').textContent = `${gender === 'F' ? '♀' : '♂'} ${bird.name}`;
 
     // Close button
-    card.querySelector('.close-btn').addEventListener('click', () => {
-      selectedBirds.delete(bird.id);
-      updateSidebar();
-      populateList();
-      drawGraph(selectedBirds, data);
-      refreshCoiPanelIfOpen();
-      refreshMutationPanelIfOpen();
-    });
+    card.querySelector('.close-btn').addEventListener('click', () => removeFromSelection(bird.id));
 
     // Fill table
     card.querySelector('.bird-id').textContent = bird.id;
